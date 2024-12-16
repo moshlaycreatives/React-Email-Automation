@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import Table from '../../components/tables';
 import Modal from '../../components/modal';
-import ModifyForm from './modify-form';
+import Form from './form';
 
 const GmailAccounts = () => {
   const [items, setItems] = useState([
@@ -44,26 +44,51 @@ const GmailAccounts = () => {
   const [open, setOpen] = useState('');
   const handleOpen = (name: string) => setOpen(name);
   const handleClose = () => setOpen('');
+  const modifyModal = open === 'modify';
+  const addNewModal = open === 'add-new';
+
+  const handleSave = (item) => {
+    console.log(item);
+  };
 
   return (
     <div>
-      <Modal open={open}>
-        <ModifyForm />
+      <Modal
+        modalIsOpen={modifyModal}
+        title="Modify Account"
+        closeModal={handleClose}
+      >
+        <Form
+          item={selectedItem}
+          handleClose={handleClose}
+          handleSave={handleSave}
+        />
       </Modal>
-      <div className="actions d-flex gap-1 flex-wrap justify-content-between mb-4">
+      <Modal
+        modalIsOpen={addNewModal}
+        title="Add new Account"
+        closeModal={handleClose}
+      >
+        <Form handleClose={handleClose} handleSave={handleSave} />
+      </Modal>
+      <div className="actions w-100 d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
         <button
-          style={{ width: '33%' }}
+          style={{ width: '32%' }}
           className="btn btn-success overflow-hidden position-relative"
         >
           <label htmlFor="import_accounts"></label>
           Import Accounts
           {/* <input type="file" id="import_accounts" style={{width:"33%"}} className='position-absolute'/> */}
         </button>
-        <button style={{ width: '33%' }} className="btn btn-success">
+        <button
+          style={{ width: '32%' }}
+          className="btn btn-success"
+          onClick={() => setOpen('add-new')}
+        >
           Add Account
         </button>
         <button
-          style={{ width: '33%' }}
+          style={{ width: '32%' }}
           className="btn btn-success"
           onClick={() => handleOpen('modify')}
           target={'modify'}
@@ -73,7 +98,7 @@ const GmailAccounts = () => {
           Modify
         </button>
         {/* <Modal.Button
-          style={{ width: '33%' }}
+        
           className="btn btn-success"
           onClick={() => handleOpen('modify')}
           target={'modify'}
@@ -82,13 +107,13 @@ const GmailAccounts = () => {
         >
           Modify
         </Modal.Button> */}
-        <button style={{ width: '33%' }} className="btn btn-danger">
+        <button style={{ width: '32%' }} className="btn btn-danger">
           Delete
         </button>
-        <button style={{ width: '33%' }} className="btn btn-primary">
+        <button style={{ width: '32%' }} className="btn btn-primary">
           Open Account
         </button>
-        <button style={{ width: '33%' }} className="btn btn-primary">
+        <button style={{ width: '32%' }} className="btn btn-primary">
           Connect Account
         </button>
       </div>

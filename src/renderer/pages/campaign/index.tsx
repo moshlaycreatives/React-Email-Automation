@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import Table from '../../components/tables';
+import Form from './form';
+import ReactModal from '../../components/modal';
 
 const Campaign = () => {
   const [items, setItems] = useState([
@@ -27,18 +29,47 @@ const Campaign = () => {
   const [open, setOpen] = useState('');
   const handleOpen = (name: string) => setOpen(name);
   const handleClose = () => setOpen('');
+  const modifyModal = open === 'modify';
+  const addNewModal = open === 'add-new';
+  const handleSave = (item) => {
+    console.log(item);
+  };
   return (
     <div>
+      <ReactModal
+        modalIsOpen={modifyModal}
+        title="Email List"
+        closeModal={handleClose}
+      >
+        <Form
+          item={selectedItem}
+          handleClose={handleClose}
+          handleSave={handleSave}
+        />
+      </ReactModal>
+      <ReactModal
+        modalIsOpen={addNewModal}
+        title="Email List"
+        closeModal={handleClose}
+      >
+        <Form
+          item={selectedItem}
+          handleClose={handleClose}
+          handleSave={handleSave}
+        />
+      </ReactModal>
       <div className="actions d-flex gap-1 flex-wrap justify-content-between mb-4">
-        <button style={{ width: '33%' }} className="btn btn-success">
+        <button
+          style={{ width: '33%' }}
+          className="btn btn-success"
+          onClick={() => setOpen('add-new')}
+        >
           Add New Campaign
         </button>
         <button
           style={{ width: '33%' }}
           className="btn btn-success"
           onClick={() => handleOpen('modify')}
-          target={'modify'}
-          // target={open}
           key={open}
         >
           Modify
@@ -70,9 +101,11 @@ const Campaign = () => {
             thead: 'thead-light',
             tbody: 'tbody-light',
           }}
-          selectedKey="profile_id"
+          selectedKey="id"
           selectedValue={selectedId}
-          onRowClick={(item: any) => setSelectedId(item.profile_id)}
+          onRowClick={(item) => {
+            setSelectedId(item.id);
+          }}
         />
       </div>
     </div>
