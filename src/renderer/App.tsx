@@ -15,6 +15,8 @@ import Campaign from './pages/campaign';
 import Login from './pages/login';
 import logo from './asserts/gmailer-Logo.png';
 import AddNewSpintax from './pages/Spintax/add-new';
+import { ToastContainer } from 'react-toastify';
+// import { Counter } from './pages/counter/counter';
 
 export const tabs = [
   { id: 1, name: 'Settings', path: '/settings', component: Setting },
@@ -43,6 +45,7 @@ export function Home() {
           'linear-gradient(180deg, #250E42 0%, #3C1B64 25%, #532886 50%)',
       }}
     >
+      {/* <Counter /> */}
       <div className="container">
         <div className="row">
           <div className="col-sm-4 my-5">
@@ -174,8 +177,10 @@ export default function App() {
           <Route key={tab.id} path={tab.path} element={tab.component} />
         ))} */}
         <Route path="/spintax-addnew" element={<AddNewSpintax />} />
+        <Route path="/spintax-addnew/:id" element={<AddNewSpintax />} />
         <Route path="/" element={<Home />}>
-          <Route path="/settings" element={<Setting />} />
+          <Route index element={<Setting />} />
+          <Route path="settings" element={<Setting />} />
           <Route path="/spintax" element={<Spintax />} />
           <Route path="/gmail-accounts" element={<GmailAccounts />} />
           <Route path="/email-lists" element={<EmailLists />} />
@@ -183,6 +188,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
         </Route>
       </Routes>
+      <ToastContainer />
     </Router>
   );
 }

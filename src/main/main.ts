@@ -14,6 +14,7 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+// import osUtils from "os-utils"
 
 class AppUpdater {
   constructor() {
@@ -30,7 +31,6 @@ ipcMain.on('ipc-example', async (event, arg) => {
   console.log(msgTemplate(arg));
   event.reply('ipc-example', msgTemplate('pong'));
 });
-
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -128,6 +128,24 @@ app.on('window-all-closed', () => {
 app
   .whenReady()
   .then(() => {
+    ipcMain.on('create-window', function (event, arg) {
+      debugger;
+      console.log(arg, 'args from main');
+      const [input] = arg;
+      const numberOfWindows = input.max_browser_automation;
+      for (let i = 0; i < numberOfWindows; i++) {
+        let child = new BrowserWindow();
+        // let child = new BrowserWindow({
+        //   show: false,
+        //   width: 300,
+        //   height: 300,
+        //   title: i + 'title',
+        //   parent: mainWindow,
+        // });
+        child.loadURL('https://google.com');
+      }
+    });
+
     createWindow();
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the

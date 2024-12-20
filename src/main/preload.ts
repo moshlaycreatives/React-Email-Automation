@@ -2,7 +2,8 @@
 /* eslint no-unused-vars: off */
 import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
 
-export type Channels = 'ipc-example';
+export type Channels = string;
+// export type Channels = 'ipc-example';
 
 const electronHandler = {
   ipcRenderer: {
