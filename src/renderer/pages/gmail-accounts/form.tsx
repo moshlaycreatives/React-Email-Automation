@@ -1,6 +1,27 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import useInput from '../../hooks/input';
 
-const GmailAccountForm = ({ item,handleClose,handleSave }) => {
+const defaultValue = {};
+const rules = {};
+const GmailAccountForm = ({
+  item,
+  handleClose,
+  handleSave,
+  handleUpdate,
+}: {
+  item: any;
+  handleClose: any;
+  handleSave: any;
+  handleUpdate: any;
+}) => {
+  const { input, setInput, onChange } = useInput({
+    defaultValue,
+    rules,
+  });
+  useEffect(() => {
+    setInput(item);
+  }, [item?._id]);
+
   return (
     <div className="" style={{ width: '500px' }}>
       <div className="d-flex justify-content-between mb-2 align-items-center">
@@ -14,6 +35,9 @@ const GmailAccountForm = ({ item,handleClose,handleSave }) => {
           type="text"
           className="form-control"
           id="name"
+          name="AccountName"
+          value={input?.['AccountName']}
+          onChange={onChange}
           placeholder="Please enter name"
         />
       </div>
@@ -25,6 +49,9 @@ const GmailAccountForm = ({ item,handleClose,handleSave }) => {
           type="text"
           className="form-control"
           id="email"
+          name="Email"
+          value={input?.['Email']}
+          onChange={onChange}
           placeholder="Please enter email "
         />
       </div>
@@ -36,6 +63,9 @@ const GmailAccountForm = ({ item,handleClose,handleSave }) => {
           type="password"
           className="form-control"
           id="password"
+          name="Password"
+          value={input?.['Password']}
+          onChange={onChange}
           placeholder="Please enter password"
         />
       </div>
@@ -47,6 +77,9 @@ const GmailAccountForm = ({ item,handleClose,handleSave }) => {
           type="number"
           className="form-control"
           id="max_daily_send"
+          name="MaxEmailPerDay"
+          value={input?.['MaxEmailPerDay']}
+          onChange={onChange}
           placeholder=""
         />
       </div>
@@ -58,6 +91,9 @@ const GmailAccountForm = ({ item,handleClose,handleSave }) => {
           type="number"
           className="form-control"
           id="daily_in_minutes"
+          name="DelayInMinuts"
+          value={input?.['DelayInMinuts']}
+          onChange={onChange}
           placeholder=""
         />
       </div>
@@ -65,7 +101,15 @@ const GmailAccountForm = ({ item,handleClose,handleSave }) => {
         <label htmlFor="proxy" className="form-label w-50 fw-bold ">
           Proxy
         </label>
-        <input type="text" className="form-control" id="proxy" placeholder="" />
+        <input
+          type="text"
+          className="form-control"
+          id="proxy"
+          placeholder=""
+          name="Proxy"
+          value={input?.['Proxy']}
+          onChange={onChange}
+        />
       </div>
       <div className="d-flex gap-2 align-items-center flex-row mb-2">
         <label htmlFor="user_agent" className="form-label w-50 fw-bold ">
@@ -75,6 +119,9 @@ const GmailAccountForm = ({ item,handleClose,handleSave }) => {
           type="text"
           className="form-control"
           id="user_agent"
+          name="UserAgent"
+          value={input?.['UserAgent']}
+          onChange={onChange}
           placeholder=""
         />
       </div>
@@ -86,7 +133,10 @@ const GmailAccountForm = ({ item,handleClose,handleSave }) => {
           id="active"
           className="form-check-input mt-0"
           type="checkbox"
-          value=""
+          name="Enable"
+          value={input?.['Enable']}
+          checked={input?.['Enable']}
+          onChange={(e) => onChange(e, e.target.checked, 'zero')}
           aria-label="Checkbox for following text input"
         />
       </div>
@@ -98,13 +148,25 @@ const GmailAccountForm = ({ item,handleClose,handleSave }) => {
           id="visible"
           className="form-check-input mt-0"
           type="checkbox"
-          value=""
+          name="Visible"
+          value={input?.['Visible']}
+          checked={input?.['Visible']}
+          onChange={(e) => onChange(e, e.target.checked, 'zero')}
           aria-label="Checkbox for following text input"
         />
       </div>
       <div className="d-flex gap-2 align-items-center flex-row-reverse mb-2">
-        <button className="btn btn-danger" onClick={handleClose}>Close</button>
-        <button className="btn btn-success" onClick={handleSave}>Save</button>
+        <button className="btn btn-danger" onClick={handleClose}>
+          Close
+        </button>
+        <button
+          className="btn btn-success"
+          onClick={
+            item?._id ? () => handleUpdate(input) : () => handleSave(input)
+          }
+        >
+          {item?._id ? 'Update' : 'Save'}
+        </button>
       </div>
     </div>
   );

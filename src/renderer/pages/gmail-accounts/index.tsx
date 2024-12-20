@@ -2,54 +2,80 @@ import { useState } from 'react';
 import Table from '../../components/tables';
 import Modal from '../../components/modal';
 import Form from './form';
+import useFetch from '../../hooks/useFetch';
+import { accountServices } from '../../services/accountsService';
+import { isArray } from '../../utils/utils';
+import { toast } from 'react-toastify';
 
 const GmailAccounts = () => {
-  const [items, setItems] = useState([
-    {
-      profile_id: '1',
-      name: 'Gmail 1',
-      email: 'email1@gmail.com',
-      proxy: '127.234.0.1',
-      max_per_day: 20,
-      delay_in_minutes: 10,
-      active: 0,
-      visible: 0,
-      User_agents: '',
-    },
-    {
-      profile_id: '2',
-      name: 'Gmail 2',
-      email: 'email2@gmail.com',
-      proxy: '127.0.43.1',
-      max_per_day: 20,
-      delay_in_minutes: 10,
-      active: 0,
-      visible: 0,
-      User_agents: '',
-    },
-    {
-      profile_id: '3',
-      name: 'Gmail 3',
-      email: 'email3@gmail.com',
-      proxy: '127.10.0.1',
-      max_per_day: 20,
-      delay_in_minutes: 10,
-      active: 0,
-      visible: 0,
-      User_agents: '',
-    },
-  ]);
+  const [refetch, setRefetch] = useState(false);
+  const { response, loading, error } = useFetch({
+    callback: accountServices.getAll,
+    refetch,
+    setRefetch,
+  });
+  const items = response?.data?.data;
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const selectedItem = items.filter((item) => item.profile_id === selectedId);
+
+  const selectedItem = selectedId
+    ? isArray(items) && items.find((item) => item?._id === selectedId)
+    : {};
   const [open, setOpen] = useState('');
   const handleOpen = (name: string) => setOpen(name);
   const handleClose = () => setOpen('');
   const modifyModal = open === 'modify';
   const addNewModal = open === 'add-new';
-
-  const handleSave = (item) => {
-    console.log(item);
+  const transformBool = (val) => {
+    return val === true ? 1 : 0;
   };
+
+  const handleSave = async (item) => {
+    try {
+      debugger;
+      console.log(item);
+      item.Enable = transformBool(item.Enable);
+      item.Visible = transformBool(item.Visible);
+      const response = await accountServices.add({ docs: [item] });
+      toast("Account Created",{type:"success"})
+
+      setRefetch(true);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      handleClose();
+    }
+  };
+
+  const handleUpdate = async (item) => {
+    try {
+      debugger;
+      console.log(item);
+      item.Enable = transformBool(item.Enable);
+      item.Visible = transformBool(item.Visible);
+      const response = await accountServices.update(selectedId, item);
+      toast("Account Updated",{type:"success"})
+
+      setRefetch(true);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      handleClose();
+    }
+  };
+
+  const handleDelete = async () => {
+    try {
+      debugger;
+      const response = await accountServices.delete(selectedId);
+      toast("Account Deleted",{type:"success"})
+      setRefetch(true);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  if (error) return 'Something went wrong';
+  if (loading) return 'Loading...';
 
   return (
     <div>
@@ -62,6 +88,7 @@ const GmailAccounts = () => {
           item={selectedItem}
           handleClose={handleClose}
           handleSave={handleSave}
+          handleUpdate={handleUpdate}
         />
       </Modal>
       <Modal
@@ -69,7 +96,11 @@ const GmailAccounts = () => {
         title="Add new Account"
         closeModal={handleClose}
       >
-        <Form handleClose={handleClose} handleSave={handleSave} />
+        <Form
+          handleClose={handleClose}
+          handleUpdate={handleUpdate}
+          handleSave={handleSave}
+        />
       </Modal>
       <div className="actions w-100 d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
         <button
@@ -107,7 +138,7 @@ const GmailAccounts = () => {
         >
           Modify
         </Modal.Button> */}
-        <button style={{ width: '32%' }} className="btn btn-danger">
+        <button style={{ width: '32%' }} className="btn btn-danger" onClick={handleDelete}>
           Delete
         </button>
         <button style={{ width: '32%' }} className="btn btn-primary">
@@ -117,18 +148,18 @@ const GmailAccounts = () => {
           Connect Account
         </button>
       </div>
-      <div className="overflow-auto">
+      <div style={{ height: '50vh' }} className="overflow-auto">
         <Table
           thead={[
-            'profile_id',
-            'name',
-            'email',
-            'proxy',
-            'max_per_day',
-            'delay_in_minutes',
-            'active',
-            'visible',
-            'user_agents',
+            '_id',
+            'AccountName',
+            'Email',
+            'Proxy',
+            'MaxEmailPerDay',
+            'DelayInMinuts',
+            'Enable',
+            'Visible',
+            'UserAgent',
           ]}
           items={items}
           classes={{
@@ -136,9 +167,9 @@ const GmailAccounts = () => {
             thead: 'thead-light',
             tbody: 'tbody-light',
           }}
-          selectedKey="profile_id"
+          selectedKey="_id"
           selectedValue={selectedId}
-          onRowClick={(item: any) => setSelectedId(item.profile_id)}
+          onRowClick={(item: any) => setSelectedId(item._id)}
         />
       </div>
     </div>

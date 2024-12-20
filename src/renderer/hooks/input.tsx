@@ -10,12 +10,14 @@ const useInput = ({ defaultValue, rules }: DynamicObject) => {
   const onChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     val: any = null,
+    specialCase:any,
   ) => {
+    debugger
     const _errors = {};
     let name = e.target.name;
     let value = e.target.value;
     // debugger;
-    if (val) {
+    if (val || specialCase === "zero") {
       value = val;
     }
     console.log(input);

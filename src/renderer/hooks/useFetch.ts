@@ -4,7 +4,7 @@ import useLoading from './useLoading';
 const useFetch = ({
   id,
   callback,
-  refetch,
+  refetch = false,
   setRefetch = () => {},
 }: {
   id?: string | null | undefined;
