@@ -4,20 +4,20 @@ type DynamicObject = {
   [key: string]: any; // Keys are strings, and values are also any
 };
 
-const useInput = ({ defaultValue, rules }: DynamicObject) => {
+const useInput = ({ defaultValue = {}, rules = {} }: DynamicObject) => {
   const [input, setInput] = React.useState(defaultValue);
   const [errors, setErrors] = React.useState<DynamicObject>({});
   const onChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     val: any = null,
-    specialCase:any,
+    specialCase: any,
   ) => {
-    debugger
+    debugger;
     const _errors = {};
     let name = e.target.name;
     let value = e.target.value;
     // debugger;
-    if (val || specialCase === "zero") {
+    if (val || specialCase === 'zero') {
       value = val;
     }
     console.log(input);

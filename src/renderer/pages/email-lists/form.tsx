@@ -1,30 +1,15 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Table from '../../components/tables';
+import useInput from '../../hooks/input';
 
-const GmailAccountForm = ({ item, handleClose, handleSave }) => {
-  const [items, setItems] = useState([
-    {
-      id: 1,
-      email: 'email@gamil.com',
-      firstname: 'first name',
-      lastname: 'last name',
-      firstline: 'first line',
-    },
-    {
-      id: 2,
-      email: 'email@gamil.com',
-      firstname: 'first name',
-      lastname: 'last name',
-      firstline: 'first line',
-    },
-    {
-      id: 3,
-      email: 'email@gamil.com',
-      firstname: 'first name',
-      lastname: 'last name',
-      firstline: 'first line',
-    },
-  ]);
+const GmailAccountForm = ({ item, handleClose, handleSave,handleUpdate }) => {
+  const [items, setItems] = useState([]);
+  const {input,setInput,onChange} = useInput({});
+
+  useEffect(() => {
+    setInput(item)
+  }, [item?._id])
+  
   return (
     <div className="" style={{ width: '500px' }}>
       <div className="d-flex justify-content-between mb-2 align-items-center">
@@ -38,6 +23,9 @@ const GmailAccountForm = ({ item, handleClose, handleSave }) => {
           type="text"
           className="form-control"
           id="name"
+          name="Name"
+          value={input?.Name}
+          onChange={onChange}
           placeholder="Please enter name"
         />
       </div>
@@ -49,12 +37,15 @@ const GmailAccountForm = ({ item, handleClose, handleSave }) => {
           rows={3}
           className="form-control"
           id="descrption"
+          name="Description"
+          value={input?.Description}
+          onChange={onChange}
           placeholder="Please enter description"
         ></textarea>
       </div>
       <div className="d-flex justify-content-end my-2">
-        <button className="btn btn-success" onClick={handleSave}>
-          Save
+        <button className="btn btn-success" onClick={item?._id ? ()=>handleUpdate(input) : () => handleSave(input)}>
+          {item?._id ? "Update" : "Save"}
         </button>
       </div>
       <div className="fw-bold w-100 gap-2 mb-2">

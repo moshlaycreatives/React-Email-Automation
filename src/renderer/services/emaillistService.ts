@@ -2,7 +2,7 @@ import { axiosJson } from '../utils/http';
 
 const endpoint = '/emailList';
 const emailListEmails = '/emails';
-const accountServices = {
+const emailListServices = {
   add: async (item) => {
     const response = await axiosJson.post(endpoint, item);
     return response;
@@ -16,7 +16,7 @@ const accountServices = {
     return response;
   },
   update: async (id: string, item) => {
-    const response = await axiosJson.patch(`${endpoint}/${id}`, item);
+    const response = await axiosJson.post(`${endpoint}/${id}`, item);
     return response;
   },
   delete: async (id: string) => {
@@ -28,7 +28,7 @@ const accountServices = {
     return response;
   },
   importEmails: async (items) => {
-    const response = await axiosJson.post(`${emailListEmails}/${id}`,items);
+    const response = await axiosJson.post(`${emailListEmails}/${id}`, items);
     return response;
   },
   deleteEmail: async (id: string) => {
@@ -41,4 +41,4 @@ const accountServices = {
   },
 };
 
-export { accountServices };
+export { emailListServices };
