@@ -12,7 +12,6 @@ const useInput = ({ defaultValue = {}, rules = {} }: DynamicObject) => {
     val: any = null,
     specialCase: any,
   ) => {
-    debugger;
     const _errors = {};
     let name = e.target.name;
     let value = e.target.value;

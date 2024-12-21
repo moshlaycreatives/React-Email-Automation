@@ -1,30 +1,48 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import Table from '../../components/tables';
 import Modal from '../../components/modal';
 import Form from './form';
 import useFetch from '../../hooks/useFetch';
 import { accountServices } from '../../services/accountsService';
-import { isArray } from '../../utils/utils';
+import { csvToJson, isArray } from '../../utils/utils';
 import { toast } from 'react-toastify';
+import useLoading from '../../hooks/useLoading';
+import LoadingBtn from '../../components/loadingBtn';
 
 const GmailAccounts = () => {
   const [refetch, setRefetch] = useState(false);
-  const { response, loading, error } = useFetch({
+
+  const {
+    response,
+    loading: fetchLoading,
+    error,
+  } = useFetch({
     callback: accountServices.getAll,
     refetch,
     setRefetch,
   });
   const items = response?.data?.data;
+
   const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  const { loading, setStatus } = useLoading();
+
+  const importRef = useRef(null);
+
+  const [open, setOpen] = useState('');
+  const handleOpen = (name: string) => setOpen(name);
+  const handleClose = () => setOpen('');
+
+  const saveLoading = loading === 'save' ? true : false;
+  const deleteLoading = loading === 'delete' ? true : false;
+  const importLoading = loading === 'import' ? true : false;
+  const modifyModal = open === 'modify';
+  const addNewModal = open === 'add-new';
 
   const selectedItem = selectedId
     ? isArray(items) && items.find((item) => item?._id === selectedId)
     : {};
-  const [open, setOpen] = useState('');
-  const handleOpen = (name: string) => setOpen(name);
-  const handleClose = () => setOpen('');
-  const modifyModal = open === 'modify';
-  const addNewModal = open === 'add-new';
+
   const transformBool = (val) => {
     return val === true ? 1 : 0;
   };
@@ -35,14 +53,16 @@ const GmailAccounts = () => {
       console.log(item);
       item.Enable = transformBool(item.Enable);
       item.Visible = transformBool(item.Visible);
+      setStatus('save');
       const response = await accountServices.add({ docs: [item] });
-      toast("Account Created",{type:"success"})
+      toast('Account Created', { type: 'success' });
 
       setRefetch(true);
     } catch (error) {
       console.log(error);
     } finally {
       handleClose();
+      setStatus(false);
     }
   };
 
@@ -53,7 +73,7 @@ const GmailAccounts = () => {
       item.Enable = transformBool(item.Enable);
       item.Visible = transformBool(item.Visible);
       const response = await accountServices.update(selectedId, item);
-      toast("Account Updated",{type:"success"})
+      toast('Account Updated', { type: 'success' });
 
       setRefetch(true);
     } catch (error) {
@@ -66,16 +86,38 @@ const GmailAccounts = () => {
   const handleDelete = async () => {
     try {
       debugger;
+      setStatus('delete');
       const response = await accountServices.delete(selectedId);
-      toast("Account Deleted",{type:"success"})
+      toast('Account Deleted', { type: 'success' });
       setRefetch(true);
     } catch (error) {
       console.log(error);
+    } finally {
+      setStatus(false);
     }
   };
 
+  const openFileModal = () => {
+    importRef.current.click();
+  };
+
+  const importCsv = () => {
+    const file = importRef.current.files[0];
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      let result = e.target?.result;
+      let json = csvToJson(result);
+      await accountServices.import({ docs: json });
+      setRefetch(true)
+      result = null;
+      json = null;
+    };
+    reader.readAsText(file);
+    // csvToJson(file)
+  };
+
   if (error) return 'Something went wrong';
-  if (loading) return 'Loading...';
+  if (fetchLoading) return 'Loading...';
 
   return (
     <div>
@@ -100,17 +142,18 @@ const GmailAccounts = () => {
           handleClose={handleClose}
           handleUpdate={handleUpdate}
           handleSave={handleSave}
+          saveLoading={saveLoading}
         />
       </Modal>
       <div className="actions w-100 d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
-        <button
-          style={{ width: '32%' }}
-          className="btn btn-success overflow-hidden position-relative"
-        >
-          <label htmlFor="import_accounts"></label>
-          Import Accounts
-          {/* <input type="file" id="import_accounts" style={{width:"33%"}} className='position-absolute'/> */}
-        </button>
+        <div style={{ width: '32%' }} onClick={openFileModal}>
+          <input onChange={importCsv} ref={importRef} type="file" hidden />
+          <LoadingBtn
+            loading={importLoading}
+            className="btn btn-success w-100"
+            label="Import Accounts"
+          />
+        </div>
         <button
           style={{ width: '32%' }}
           className="btn btn-success"
@@ -128,19 +171,13 @@ const GmailAccounts = () => {
         >
           Modify
         </button>
-        {/* <Modal.Button
-        
-          className="btn btn-success"
-          onClick={() => handleOpen('modify')}
-          target={'modify'}
-          // target={open}
-          key={open}
-        >
-          Modify
-        </Modal.Button> */}
-        <button style={{ width: '32%' }} className="btn btn-danger" onClick={handleDelete}>
-          Delete
-        </button>
+        <LoadingBtn
+          style={{ width: '32%' }}
+          className="btn btn-danger"
+          onClick={handleDelete}
+          loading={deleteLoading}
+          label="Delete"
+        />
         <button style={{ width: '32%' }} className="btn btn-primary">
           Open Account
         </button>
@@ -148,7 +185,7 @@ const GmailAccounts = () => {
           Connect Account
         </button>
       </div>
-      <div style={{ height: '50vh' }} className="overflow-auto">
+      <div style={{ maxHeight: '50vh' }} className="overflow-auto">
         <Table
           thead={[
             '_id',
@@ -156,7 +193,7 @@ const GmailAccounts = () => {
             'Email',
             'Proxy',
             'MaxEmailPerDay',
-            'DelayInMinuts',
+            'DelayInMinutes',
             'Enable',
             'Visible',
             'UserAgent',

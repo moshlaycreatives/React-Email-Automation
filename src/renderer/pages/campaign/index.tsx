@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Table from '../../components/tables';
 import Form from './form';
 import ReactModal from '../../components/modal';
+import AccountsForm from './accountForm';
 
 const Campaign = () => {
   const [items, setItems] = useState([
@@ -38,7 +39,7 @@ const Campaign = () => {
     <div>
       <ReactModal
         modalIsOpen={modifyModal}
-        title="Email List"
+        title="campaign"
         closeModal={handleClose}
       >
         <Form
@@ -49,7 +50,7 @@ const Campaign = () => {
       </ReactModal>
       <ReactModal
         modalIsOpen={addNewModal}
-        title="Email List"
+        title="campaign"
         closeModal={handleClose}
       >
         <Form

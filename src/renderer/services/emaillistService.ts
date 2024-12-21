@@ -23,20 +23,20 @@ const emailListServices = {
     const response = await axiosJson.delete(`${endpoint}/${id}`);
     return response;
   },
-  getAllEmails: async () => {
-    const response = await axiosJson.post(emailListEmails);
+  getAllEmails: async (id) => {
+    const response = await axiosJson.get(`${emailListEmails}/${id}`);
     return response;
   },
-  importEmails: async (items) => {
-    const response = await axiosJson.post(`${emailListEmails}/${id}`, items);
+  importEmails: async (items: any) => {
+    const response = await axiosJson.post(emailListEmails, { docs: items });
     return response;
   },
   deleteEmail: async (id: string) => {
-    const response = await axiosJson.delete(`${emailListEmails}/${id}`);
+    const response = await axiosJson.delete(`${emailListEmails}/delete/${id}`);
     return response;
   },
-  deleteAllEmail: async (ids: string[]) => {
-    const response = await axiosJson.delete(`${emailListEmails}`, ids);
+  deleteAllEmail: async (id: string) => {
+    const response = await axiosJson.delete(`${emailListEmails}/${id}`);
     return response;
   },
 };

@@ -6,6 +6,10 @@ const accountServices = {
     const response = await axiosJson.post(endpoint, item);
     return response;
   },
+  import: async (items) => {
+    const response = await axiosJson.post(endpoint, items);
+    return response;
+  },
   getAll: async () => {
     const response = await axiosJson.get(endpoint);
     return response;

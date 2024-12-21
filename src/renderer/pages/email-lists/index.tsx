@@ -27,7 +27,6 @@ const EmailLists = () => {
 
   const handleSave = async (item) => {
     try {
-      debugger;
       const response = await emailListServices.add(item);
       toast('EmailList Created', { type: 'success' });
 
@@ -41,7 +40,6 @@ const EmailLists = () => {
 
   const handleUpdate = async (item) => {
     try {
-      debugger;
       const response = await emailListServices.update(selectedId, item);
       toast('EmailList Updated', { type: 'success' });
 
@@ -72,7 +70,7 @@ const EmailLists = () => {
     <div>
       <ReactModal
         modalIsOpen={modifyModal}
-        title="Email List"
+        title="Modify Email List"
         closeModal={handleClose}
       >
         <Form
@@ -84,11 +82,10 @@ const EmailLists = () => {
       </ReactModal>
       <ReactModal
         modalIsOpen={addNewModal}
-        title="Email List"
+        title="Add Email List"
         closeModal={handleClose}
       >
         <Form
-          item={selectedItem}
           handleClose={handleClose}
           handleSave={handleSave}
         />

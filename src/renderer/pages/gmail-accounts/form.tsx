@@ -8,11 +8,13 @@ const GmailAccountForm = ({
   handleClose,
   handleSave,
   handleUpdate,
+  saveLoading = false,
 }: {
   item: any;
   handleClose: any;
   handleSave: any;
   handleUpdate: any;
+  saveLoading: any;
 }) => {
   const { input, setInput, onChange } = useInput({
     defaultValue,
@@ -91,8 +93,8 @@ const GmailAccountForm = ({
           type="number"
           className="form-control"
           id="daily_in_minutes"
-          name="DelayInMinuts"
-          value={input?.['DelayInMinuts']}
+          name="DelayInMinutes"
+          value={input?.['DelayInMinutes']}
           onChange={onChange}
           placeholder=""
         />
@@ -160,11 +162,17 @@ const GmailAccountForm = ({
           Close
         </button>
         <button
-          className="btn btn-success"
+          className="btn btn-success d-flex align-items-center gap-2"
+          disabled={saveLoading}
           onClick={
             item?._id ? () => handleUpdate(input) : () => handleSave(input)
           }
         >
+          {saveLoading && (
+            <div class="spinner-border spinner-border-sm" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          )}
           {item?._id ? 'Update' : 'Save'}
         </button>
       </div>

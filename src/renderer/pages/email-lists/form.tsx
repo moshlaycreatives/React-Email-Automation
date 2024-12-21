@@ -1,15 +1,65 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Table from '../../components/tables';
 import useInput from '../../hooks/input';
+import useFetch from '../../hooks/useFetch';
+import { emailListServices } from '../../services/emaillistService';
+import { csvToJson, isArray } from '../../utils/utils';
 
-const GmailAccountForm = ({ item, handleClose, handleSave,handleUpdate }) => {
-  const [items, setItems] = useState([]);
-  const {input,setInput,onChange} = useInput({});
+const GmailAccountForm = ({ item, handleClose, handleSave, handleUpdate }) => {
+  const { input, setInput, onChange } = useInput({});
+  const [refetch, setRefetch] = useState(false);
+  const [emailId,setEmailId] = useState(null);
+
+  const importRef = useRef(null);
+
+  const { response, loading, error } = useFetch({
+    callback: () => emailListServices.getAllEmails(item?._id),
+    refetch,
+    setRefetch,
+  });
+
+  const items = response?.data?.data;
+  const disabled = item?._id ? false : true;
 
   useEffect(() => {
-    setInput(item)
-  }, [item?._id])
-  
+    setInput(item);
+  }, [item?._id]);
+
+  const openFileModal = () => {
+    importRef.current.click();
+  };
+
+  const importCsv = () => {
+    const file = importRef.current.files[0];
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      let result = e.target?.result;
+      let json = csvToJson(result);
+      const data =
+        Array.isArray(json) &&
+        json?.map((email) => ({
+          EmailListId: item?._id,
+          ...email,
+        }));
+      await emailListServices.importEmails(data);
+      setRefetch(true);
+      result = null;
+      json = null;
+    };
+    reader.readAsText(file);
+    // csvToJson(file)
+  };
+
+  const deleteOne = async ()=>{
+    await emailListServices.deleteEmail(emailId)
+    setRefetch(true)
+  }
+
+  const deleteAllEmails = async ()=>{
+    await emailListServices.deleteAllEmail(item?._id)
+    setRefetch(true)
+  }
+
   return (
     <div className="" style={{ width: '500px' }}>
       <div className="d-flex justify-content-between mb-2 align-items-center">
@@ -44,30 +94,54 @@ const GmailAccountForm = ({ item, handleClose, handleSave,handleUpdate }) => {
         ></textarea>
       </div>
       <div className="d-flex justify-content-end my-2">
-        <button className="btn btn-success" onClick={item?._id ? ()=>handleUpdate(input) : () => handleSave(input)}>
-          {item?._id ? "Update" : "Save"}
+        <button
+          className="btn btn-success"
+          onClick={
+            item?._id ? () => handleUpdate(input) : () => handleSave(input)
+          }
+        >
+          {item?._id ? 'Update' : 'Save'}
         </button>
       </div>
       <div className="fw-bold w-100 gap-2 mb-2">
         Emails
         <div className="d-flex align-items-center justify-content-between flex-wrap mt-2">
-          <button className="btn btn-success" style={{ width: '32%' }}>
+          <button
+            disabled={disabled}
+            className="btn btn-success"
+            style={{ width: '32%' }}
+            onClick={openFileModal}
+          >
+            <input onChange={importCsv} ref={importRef} type="file" hidden />
             Import LIst
           </button>
-          <button className="btn btn-danger" style={{ width: '32%' }}>
+          <button
+            disabled={disabled}
+            className="btn btn-danger"
+            style={{ width: '32%' }}
+            onClick={deleteOne}
+          >
             Delete
           </button>
-          <button className="btn btn-danger" style={{ width: '32%' }}>
+          <button
+            disabled={disabled}
+            className="btn btn-danger"
+            style={{ width: '32%' }}
+            onClick={deleteAllEmails}
+          >
             Delete all
           </button>
         </div>
         <div className="h-25 w-100 overlfow-auto my-4">
           <Table
-            thead={['email', 'firstname', 'lastname', 'firstline']}
+            thead={['Email', 'FirstName', 'LastName', 'FirstLine']}
             items={items}
             classes={{
               table: 'table table-bordered rounded overflow-hidden',
             }}
+            selectedKey="_id"
+            selectedValue={emailId}
+            onRowClick={(item)=>setEmailId(item?._id)}
           />
         </div>
       </div>
