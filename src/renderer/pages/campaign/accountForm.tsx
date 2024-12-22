@@ -1,31 +1,43 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import useFetch from '../../hooks/useFetch';
 import { accountServices } from '../../services/accountsService';
 import { isArray } from '../../utils/utils';
 import Loading from '../../components/loading';
+import { CampaignContext } from './campaignContext';
 
 const AccountsForm = ({ item, handleClose }) => {
+  const campaignContext = useContext(CampaignContext);
+  const { onChange, input } = campaignContext;
+
   const { response, loading, error } = useFetch({
     callback: accountServices.getAll,
   });
 
   const items = response?.data?.data;
-  const [selectedIds, setAccountIds] = useState([]);
+  const checked = (item) =>
+    isArray(input?.CampaignAccounts)
+      ? input?.CampaignAccounts.includes(item?._id)
+      : false;
+
+  const handleAccountIds = (ids) => {
+    const event = { target: { name: 'CampaignAccounts', value: ids } };
+    onChange(event);
+  };
 
   const select = (item, e) => {
     const { checked } = e.target;
+    const CampaignAccounts = input?.CampaignAccounts || [];
     if (checked) {
-      setAccountIds([...selectedIds, item?._id]);
+      handleAccountIds([CampaignAccounts, item?._id]);
     } else {
-      const result = selectedIds.filter((id) => id !== item._id);
-      setAccountIds(result);
+      handleAccountIds(CampaignAccounts.filter((id) => id !== item._id));
     }
   };
   const selectAll = () => {
-    setAccountIds(items.map((item) => item._id));
+    handleAccountIds(items.map((item) => item._id));
   };
   const deSelectAll = () => {
-    setAccountIds([]);
+    handleAccountIds([]);
   };
   console.log(items);
   return (
@@ -54,7 +66,7 @@ const AccountsForm = ({ item, handleClose }) => {
               type="checkbox"
               name="account"
               value={item?._id}
-              checked={selectedIds.includes(item?._id)}
+              checked={checked(item)}
               onClick={(e) => select(item, e)}
               id={item._id}
             />

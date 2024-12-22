@@ -1,31 +1,42 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import useFetch from '../../hooks/useFetch';
 import { isArray } from '../../utils/utils';
 import Loading from '../../components/loading';
 import { emailListServices } from '../../services/emaillistService';
+import { CampaignContext } from './campaignContext';
 
 const EmailListForm = ({ item, handleClose }) => {
+  const { input, onChange } = useContext(CampaignContext);
+
   const { response, loading, error } = useFetch({
     callback: emailListServices.getAll,
   });
 
   const items = response?.data?.data;
-  const [selectedIds, setSelectedIds] = useState([]);
+  const checked = (item) =>
+    isArray(input?.CampaignEmailIds)
+      ? input?.CampaignEmailIds.includes(item?._id)
+      : false;
+
+  const handleAccountIds = (ids) => {
+    const event = { target: { name: 'CampaignEmailIds', value: ids } };
+    onChange(event);
+  };
 
   const select = (item, e) => {
     const { checked } = e.target;
+    const CampaignEmailIds = input?.CampaignEmailIds || [];
     if (checked) {
-      setSelectedIds([...selectedIds, item?._id]);
+      handleAccountIds([CampaignEmailIds, item?._id]);
     } else {
-      const result = selectedIds.filter((id) => id !== item._id);
-      setSelectedIds(result);
+      handleAccountIds(CampaignEmailIds.filter((id) => id !== item._id));
     }
   };
   const selectAll = () => {
-    setSelectedIds(items.map((item) => item._id));
+    handleAccountIds(items.map((item) => item._id));
   };
   const deSelectAll = () => {
-    setSelectedIds([]);
+    handleAccountIds([]);
   };
   console.log(items);
   return (
@@ -53,7 +64,7 @@ const EmailListForm = ({ item, handleClose }) => {
               type="checkbox"
               name="emaillist"
               value={item?._id}
-              checked={selectedIds.includes(item?._id)}
+              checked={checked(item)}
               onClick={(e) => select(item, e)}
               id={item._id}
             />

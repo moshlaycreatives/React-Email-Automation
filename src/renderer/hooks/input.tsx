@@ -15,11 +15,9 @@ const useInput = ({ defaultValue = {}, rules = {} }: DynamicObject) => {
     const _errors = {};
     let name = e.target.name;
     let value = e.target.value;
-    // debugger;
     if (val || specialCase === 'zero') {
       value = val;
     }
-    console.log(input);
     if (rules[name]) {
       var error = rules[name](value);
     }

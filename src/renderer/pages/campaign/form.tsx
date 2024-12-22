@@ -1,37 +1,16 @@
-import React, { useState } from 'react';
-import Table from '../../components/tables';
+import { useContext, useState } from 'react';
 import Richtext from '../../components/richtext';
 import ReactModal from '../../components/modal';
 import AccountsForm from './accountForm';
 import EmailListForm from './emaillistForm';
+import { CampaignContext } from './campaignContext';
 
 const GmailAccountForm = ({ item, handleClose, handleSave }) => {
-  const [items, setItems] = useState([
-    {
-      id: 1,
-      email: 'email@gamil.com',
-      firstname: 'first name',
-      lastname: 'last name',
-      firstline: 'first line',
-    },
-    {
-      id: 2,
-      email: 'email@gamil.com',
-      firstname: 'first name',
-      lastname: 'last name',
-      firstline: 'first line',
-    },
-    {
-      id: 3,
-      email: 'email@gamil.com',
-      firstname: 'first name',
-      lastname: 'last name',
-      firstline: 'first line',
-    },
-  ]);
+  const { input, onChange, richText, setRichText, sunRef } =
+    useContext(CampaignContext);
   const [open, setOpen] = useState<string | boolean>(false);
-  const accountsModal = open === "accounts";
-  const emaillistModal = open === "emaillist";
+  const accountsModal = open === 'accounts';
+  const emaillistModal = open === 'emaillist';
 
   return (
     <div className="" style={{ width: '500px' }}>
@@ -40,20 +19,14 @@ const GmailAccountForm = ({ item, handleClose, handleSave }) => {
         title="accounts"
         closeModal={handleClose}
       >
-        <AccountsForm
-          item={item}
-          handleClose={()=>setOpen("")}
-        />
+        <AccountsForm item={item} handleClose={() => setOpen('')} />
       </ReactModal>
       <ReactModal
         modalIsOpen={emaillistModal}
         title="emaillist"
         closeModal={handleClose}
       >
-        <EmailListForm
-          item={item}
-          handleClose={()=>setOpen("")}
-        />
+        <EmailListForm item={item} handleClose={() => setOpen('')} />
       </ReactModal>
       <div className="d-flex justify-content-between mb-2 align-items-center">
         <h3>Campaign</h3>
@@ -77,6 +50,9 @@ const GmailAccountForm = ({ item, handleClose, handleSave }) => {
           type="text"
           className="form-control"
           id="name"
+          name="Name"
+          value={input?.Name}
+          onChange={onChange}
           placeholder="Please enter name"
         />
       </div>
@@ -88,6 +64,9 @@ const GmailAccountForm = ({ item, handleClose, handleSave }) => {
           rows={3}
           className="form-control"
           id="descrption"
+          name="Description"
+          value={input?.Description}
+          onChange={onChange}
           placeholder="Please enter description"
         ></textarea>
       </div>
@@ -99,15 +78,23 @@ const GmailAccountForm = ({ item, handleClose, handleSave }) => {
           type="text"
           className="form-control"
           id="subject"
+          name="Subject"
+          value={input?.Subject}
+          onChange={onChange}
           placeholder="Please enter subject"
         />
       </div>
       <div>
-        <Richtext />
+        <Richtext
+          name="Body"
+          value={richText}
+          onChange={setRichText}
+          sunRef={sunRef}
+        />
       </div>
 
       <div className="d-flex gap-2 align-items-center flex-row-reverse mb-2">
-        <button className="btn btn-success" onClick={handleSave}>
+        <button className="btn btn-success" onClick={() => handleSave(input)}>
           Save
         </button>
         <button className="btn btn-danger" onClick={handleClose}>

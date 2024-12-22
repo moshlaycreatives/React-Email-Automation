@@ -5,7 +5,7 @@ const useFetch = ({
   id,
   callback,
   refetch = false,
-  setRefetch = () => {},
+  // setRefetch = () => {},
 }: {
   id?: string | null | undefined;
   callback: any;
@@ -23,7 +23,7 @@ const useFetch = ({
       setError(err);
     } finally {
       setStatus(false);
-      setRefetch(false);
+      // setRefetch(false);
     }
   };
 
@@ -36,7 +36,7 @@ const useFetch = ({
       setError(err);
     } finally {
       setStatus(false);
-      setRefetch(false);
+      // setRefetch(false);
     }
   };
 
