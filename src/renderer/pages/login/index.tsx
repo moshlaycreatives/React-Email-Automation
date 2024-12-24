@@ -1,13 +1,27 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import logo from '../../asserts/gmailer-Logo.png';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { accountServices } from '../../services/userService';
 
 const Login: FC = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const location = useLocation();
+  const data = location?.state?.data;
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  useEffect(() => {
+    setEmail(data?.data);
+  }, [data?.email, data?.username]);
+
+  console.log(location);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     // TODO: Handle form submission, e.g., send data to backend
+    await accountServices.login({ email, password });
+
+    navigate('/');
     console.log('Email:', email);
     console.log('Password:', password);
   };
@@ -73,25 +87,28 @@ const Login: FC = () => {
                       Forgot Password?
                     </a>
                   </div>
+                  <button
+                    type="submit"
+                    className="btn w-100"
+                    style={{
+                      backgroundColor: '#FAAF43',
+                      color: 'white',
+                      borderRadius: '15px',
+                    }}
+                  >
+                    Sign In
+                  </button>
                 </form>
-                <button
-                  type="submit"
-                  className="btn w-100"
-                  style={{
-                    backgroundColor: '#FAAF43',
-                    color: 'white',
-                    borderRadius: '15px',
-                  }}
-                >
-                  Sign In
-                </button>
                 <div className="w-100 d-flex justify-content-between mt-3">
                   <p className="text-center text-white">
                     Don't have an account yet?
                   </p>
-                  <a href="#" className="text-decoration-none text-white">
+                  <Link
+                    to="/signup"
+                    className="text-decoration-none text-white"
+                  >
                     Register Now
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>

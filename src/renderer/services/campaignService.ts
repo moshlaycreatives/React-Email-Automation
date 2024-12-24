@@ -11,6 +11,10 @@ const campaingeService = {
     const response = await axiosJson.get(endpoint);
     return response;
   },
+  start: async (id) => {
+    const response = await axiosJson.get(`${endpoint}/${id}`);
+    return response;
+  },
   getById: async (id: string) => {
     const response = await axiosJson.get(`${endpoint}/${id}`);
     return response;

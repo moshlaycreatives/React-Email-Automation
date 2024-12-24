@@ -1,8 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import Table from '../../components/tables';
 import Form from './form';
 import ReactModal from '../../components/modal';
-import AccountsForm from './accountForm';
 import { CampaignContext } from './campaignContext';
 import useInput from '../../hooks/input';
 import useFetch from '../../hooks/useFetch';
@@ -10,50 +9,113 @@ import { campaingeService } from '../../services/campaignService';
 import Loading from '../../components/loading';
 import { isArray } from '../../utils/utils';
 import { toast } from 'react-toastify';
+import { spintaxServices } from '../../services/spintaxService';
+import Error from '../../components/error';
 
 const Campaign = () => {
   // debugger;
+  const [refetch, setRefetch] = useState(false);
   const { response, loading, error } = useFetch({
     callback: campaingeService.getAll,
-    refetch: true,
+    refetch,
+    setRefetch,
   });
+
+  const {
+    response: spintaxResponse,
+    loading: spintaxLoading,
+    error: spintaxError,
+  } = useFetch({ callback: spintaxServices.getAll });
+  const spintaxes = isArray(spintaxResponse?.data?.data)
+    ? spintaxResponse?.data?.data
+    : [];
+
   const items = response?.data?.data;
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const selectedItem =
-    isArray(items) && items.filter((item) => item._id === selectedId);
+    isArray(items) && items.find((item) => item._id === selectedId);
   const { input, setInput, onChange } = useInput({});
-  const [richText, setRichText] = useState('');
   const [open, setOpen] = useState('');
   const handleOpen = (name: string) => setOpen(name);
-  const sunRef = useRef(null);
-
+  console.log(selectedItem);
   const handleClose = () => setOpen('');
   const modifyModal = open === 'modify';
   const addNewModal = open === 'add-new';
+  let firstTime = true;
+  let value = 0;
+
+  useEffect(() => {
+    setInput(selectedItem);
+  }, [selectedId]);
+
+  const addNew = () => {
+    setInput({});
+    setSelectedId('');
+    setOpen('add-new');
+  };
+
   const handleSave = async (item) => {
     try {
-      console.log(item);
-      item.Body = richText;
       await campaingeService.add(item);
-      debugger;
-      sunRef?.current?.editor?.destory();
-      toast('Campaign Created');
+      setRefetch(true);
+      toast('Campaign Created', { type: 'success' });
     } catch (error) {
       console.log(error);
     } finally {
       setInput({});
       handleClose();
-      setRichText('');
+    }
+  };
+
+  const handleUpdate = async (item) => {
+    try {
+      await campaingeService.update(selectedId, item);
+      toast('Campaign Updated', { type: 'success' });
+      setRefetch(true);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setInput({});
+      handleClose();
     }
   };
 
   const deleteCampaign = async () => {
     await campaingeService.delete(selectedId);
     toast('Campaign Deleted', { type: 'success' });
+    setRefetch(true);
   };
 
-  if (error) return 'Something went wrong.';
+  const startCampaign = async () => {
+    // let recursion = 0;
+    // if (firstTime) {
+    //   value = 0;
+    // } else {
+    //   value = 10;
+    //   // recursion = selectedAccounts.total / value;
+    // }
+    // if (!selectedId) return;
+    // const getSelectedCampaign = await campaingeService.getById(selectedId);
+    // console.log(getSelectedCampaign);
+    // const selectedEmailList = getSelectedCampaign?.data?.data?.CampaignEmailIds;
+    // const selectedAccounts = getSelectedCampaign?.data?.data?.CampaignAccounts;
+    // console.log(selectedAccounts);
+    // console.log(selectedEmailList);
+    // const accounts = await accountServices.
+    // ({
+    //   ids: selectedAccounts,
+    // });
+    // const emails = await emailListServices.notSended({
+    //   ids: selectedEmailList,
+    // });
+    // console.log(accounts);
+    // console.log(emails);
+    // const enabledAccounts = accountServices.getAllEnabled(value,ids);
+    // const notSendedEmails = emailListServices.notSended(value,ids)
+  };
+
+  if (error) return <Error />;
   if (loading) return <Loading />;
 
   return (
@@ -62,9 +124,7 @@ const Campaign = () => {
         input,
         setInput,
         onChange,
-        setRichText,
-        richText,
-        sunRef,
+        spintaxes,
       }}
     >
       <div>
@@ -76,7 +136,7 @@ const Campaign = () => {
           <Form
             item={selectedItem}
             handleClose={handleClose}
-            handleSave={handleSave}
+            handleUpdate={handleUpdate}
           />
         </ReactModal>
         <ReactModal
@@ -94,11 +154,7 @@ const Campaign = () => {
           <button
             style={{ width: '33%' }}
             className="btn btn-success"
-            onClick={() => {
-              setOpen('add-new');
-              setInput({});
-              setRichText('');
-            }}
+            onClick={addNew}
           >
             Add New Campaign
           </button>
@@ -120,6 +176,7 @@ const Campaign = () => {
           <button
             style={{ width: '33%' }}
             className="btn btn-primary overflow-hidden position-relative"
+            onClick={startCampaign}
           >
             <label htmlFor="start"></label>
             start
@@ -141,10 +198,11 @@ const Campaign = () => {
               thead: 'thead-light',
               tbody: 'tbody-light',
             }}
-            selectedKey="id"
+            selectedKey="_id"
             selectedValue={selectedId}
             onRowClick={(item) => {
-              setSelectedId(item.id);
+              setSelectedId(item?._id);
+              console.log(item);
             }}
           />
         </div>

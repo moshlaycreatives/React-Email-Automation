@@ -8,7 +8,7 @@ import { csvToJson, isArray } from '../../utils/utils';
 const GmailAccountForm = ({ item, handleClose, handleSave, handleUpdate }) => {
   const { input, setInput, onChange } = useInput({});
   const [refetch, setRefetch] = useState(false);
-  const [emailId,setEmailId] = useState(null);
+  const [emailId, setEmailId] = useState(null);
 
   const importRef = useRef(null);
 
@@ -50,15 +50,15 @@ const GmailAccountForm = ({ item, handleClose, handleSave, handleUpdate }) => {
     // csvToJson(file)
   };
 
-  const deleteOne = async ()=>{
-    await emailListServices.deleteEmail(emailId)
-    setRefetch(true)
-  }
+  const deleteOne = async () => {
+    await emailListServices.deleteEmail(emailId);
+    setRefetch(true);
+  };
 
-  const deleteAllEmails = async ()=>{
-    await emailListServices.deleteAllEmail(item?._id)
-    setRefetch(true)
-  }
+  const deleteAllEmails = async () => {
+    await emailListServices.deleteAllEmail(item?._id);
+    setRefetch(true);
+  };
 
   return (
     <div className="" style={{ width: '500px' }}>
@@ -132,7 +132,10 @@ const GmailAccountForm = ({ item, handleClose, handleSave, handleUpdate }) => {
             Delete all
           </button>
         </div>
-        <div className="h-25 w-100 overlfow-auto my-4">
+        <div
+          style={{ height: '30vh', overflow: 'auto' }}
+          className="w-100 my-4"
+        >
           <Table
             thead={['Email', 'FirstName', 'LastName', 'FirstLine']}
             items={items}
@@ -141,7 +144,7 @@ const GmailAccountForm = ({ item, handleClose, handleSave, handleUpdate }) => {
             }}
             selectedKey="_id"
             selectedValue={emailId}
-            onRowClick={(item)=>setEmailId(item?._id)}
+            onRowClick={(item) => setEmailId(item?._id)}
           />
         </div>
       </div>

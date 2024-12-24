@@ -5,6 +5,8 @@ import Form from './form';
 import useFetch from '../../hooks/useFetch';
 import { emailListServices } from '../../services/emaillistService';
 import { toast } from 'react-toastify';
+import Loading from '../../components/loading';
+import Error from '../../components/error';
 
 const EmailLists = () => {
   const [refetch, setRefetch] = useState(false);
@@ -63,8 +65,9 @@ const EmailLists = () => {
     }
   };
 
-  if (error) return 'Something went wrong';
-  if (loading) return 'Loading...';
+  if (error) return <Error />;
+
+  if (loading) return <Loading />;
 
   return (
     <div>
@@ -85,10 +88,7 @@ const EmailLists = () => {
         title="Add Email List"
         closeModal={handleClose}
       >
-        <Form
-          handleClose={handleClose}
-          handleSave={handleSave}
-        />
+        <Form handleClose={handleClose} handleSave={handleSave} />
       </ReactModal>
       <div className="actions d-flex gap-2">
         <button

@@ -1,6 +1,6 @@
 import { axiosJson } from '../utils/http';
 
-const endpoint = '/accounts';
+const endpoint = '/settings';
 const accountServices = {
   add: async (item) => {
     const response = await axiosJson.post(endpoint, item);

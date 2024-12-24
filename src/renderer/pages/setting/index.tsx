@@ -1,13 +1,19 @@
+import { useEffect, useState } from 'react';
 import useInput from '../../hooks/input';
+import useFetch from '../../hooks/useFetch';
 // import electron from 'electron';
 // const ipc = electron.ipcRenderer;
 
-const defaultInput = { max_browser_automation: '' };
-const rules = {
-  max_browser_automation: (value: number) =>
-    +value > 10 ? 'Max browser must be less than 11' : false,
-};
 const Setting = () => {
+  // const settings = useFetch({})
+  const [systemInfo, setSystemInfo] = useState({});
+  const defaultInput = { max_browser_automation: '' };
+  const rules = {
+    max_browser_automation: (value: number) =>
+      +value > systemInfo?.cpuCount
+        ? `Availabel ram is ${systemInfo?.availableRAM}GB and availabel cpu cores is ${systemInfo?.cpuCount}, so the max browser between 1 and ${systemInfo?.cpuCount}`
+        : false,
+  };
   const { input, setInput, onChange, errors, setErrors } = useInput({
     defaultInput,
     rules,
@@ -17,9 +23,21 @@ const Setting = () => {
     !input?.gologin_token ||
     errors?.max_browser_automation;
 
+  useEffect(() => {
+    async function getSystemInfomation() {
+      const info = await window.electron.ipcRenderer.getSystemInfo();
+      setSystemInfo(info);
+    }
+    getSystemInfomation();
+  }, [input]);
+
+  useEffect(() => {
+    console.log(systemInfo);
+  }, [systemInfo]);
+
   const handleSave = () => {
     // generateWindows(input?.max_browser_automation);
-    debugger
+    debugger;
     window.electron.ipcRenderer.sendMessage('create-window', [input]);
     // ipc.on('create-child-window', function (event, arg) {
     //   console.log(arg);

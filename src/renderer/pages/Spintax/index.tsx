@@ -1,25 +1,27 @@
-import {  useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Table from '../../components/tables';
 import useFetch from '../../hooks/useFetch';
 import { spintaxServices } from '../../services/spintaxService';
 import { toast } from 'react-toastify';
+import Loading from '../../components/loading';
+import Error from '../../components/error';
 
 const Spintax = () => {
-  const [refetch,setRefetch] = useState(false);
+  const [refetch, setRefetch] = useState(false);
   const { response, loading, error } = useFetch({
     callback: spintaxServices.getAll,
     refetch,
-    setRefetch
+    setRefetch,
   });
-  
+
   const navigate = useNavigate();
   const items = response?.data?.data;
   const deleteSpintax = async (id: string) => {
     try {
       const response = await spintaxServices.delete(id);
       if (response.status) {
-        setRefetch(true)
+        setRefetch(true);
         toast('Spintax Deleted', { type: 'success' });
       }
     } catch (error) {
@@ -29,8 +31,10 @@ const Spintax = () => {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   console.log(error);
 
-  if (error) return 'Something went wrong...';
-  if (loading) return 'Loading...';
+  if (error) return <Error />;
+
+  if (loading) return <Loading />;
+
   return (
     <div>
       <div className="d-flex justify-content-end gap-2">

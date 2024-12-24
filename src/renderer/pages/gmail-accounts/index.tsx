@@ -8,6 +8,8 @@ import { csvToJson, isArray } from '../../utils/utils';
 import { toast } from 'react-toastify';
 import useLoading from '../../hooks/useLoading';
 import LoadingBtn from '../../components/loadingBtn';
+import Loading from '../../components/loading';
+import Error from '../../components/error';
 
 const GmailAccounts = () => {
   const [refetch, setRefetch] = useState(false);
@@ -108,7 +110,7 @@ const GmailAccounts = () => {
       let result = e.target?.result;
       let json = csvToJson(result);
       await accountServices.import({ docs: json });
-      setRefetch(true)
+      setRefetch(true);
       result = null;
       json = null;
     };
@@ -116,8 +118,9 @@ const GmailAccounts = () => {
     // csvToJson(file)
   };
 
-  if (error) return 'Something went wrong';
-  if (fetchLoading) return 'Loading...';
+  if (error) return <Error />;
+
+  if (fetchLoading) return <Loading />;
 
   return (
     <div>

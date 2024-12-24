@@ -14,6 +14,7 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import os from 'node:os';
 // import osUtils from "os-utils"
 
 class AppUpdater {
@@ -59,7 +60,6 @@ const installExtensions = async () => {
 
 //
 
-
 const createWindow = async () => {
   if (isDebug) {
     await installExtensions();
@@ -77,7 +77,7 @@ const createWindow = async () => {
     show: false,
     width: 1024,
     height: 728,
-    icon: getAssetPath('icon.png'),
+    icon: getAssetPath('thunder-mail-logo.png'),
     webPreferences: {
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
@@ -147,6 +147,25 @@ app
         // });
         child.loadURL('https://google.com');
       }
+    });
+
+    // Handle CPU and RAM requests from the renderer process
+    ipcMain.handle('get-system-info', async () => {
+      const availableRAM = os.freemem(); // Free memory in bytes
+      const estimatedWindowMemory = 150 * 1024 * 1024; // Estimate each window uses ~150MB
+      const maxWindowsByRAM = Math.floor(availableRAM / estimatedWindowMemory);
+
+      const cpus = os.cpus();
+      const maxWindowsByCPU = cpus.length; // Use 1 renderer per CPU core
+
+      // Final estimate
+      const maxChildWindows = Math.min(maxWindowsByRAM, maxWindowsByCPU);
+
+      return {
+        availableRAM: (availableRAM / (1024 * 1024 * 1024)).toFixed(2), // Convert to GB
+        cpuCount: cpus.length,
+        maxChildWindows,
+      };
     });
 
     createWindow();

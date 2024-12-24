@@ -11,6 +11,9 @@ const emailListServices = {
     const response = await axiosJson.get(endpoint);
     return response;
   },
+  notSended: async (ids) => {
+    return axiosJson.post(`${emailListEmails}/notSended`, ids);
+  },
   getById: async (id: string) => {
     const response = await axiosJson.get(`${endpoint}/${id}`);
     return response;

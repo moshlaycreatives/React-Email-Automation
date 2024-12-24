@@ -5,9 +5,8 @@ import AccountsForm from './accountForm';
 import EmailListForm from './emaillistForm';
 import { CampaignContext } from './campaignContext';
 
-const GmailAccountForm = ({ item, handleClose, handleSave }) => {
-  const { input, onChange, richText, setRichText, sunRef } =
-    useContext(CampaignContext);
+const GmailAccountForm = ({ item, handleClose, handleSave, handleUpdate }) => {
+  const { input, onChange, spintaxes } = useContext(CampaignContext);
   const [open, setOpen] = useState<string | boolean>(false);
   const accountsModal = open === 'accounts';
   const emaillistModal = open === 'emaillist';
@@ -84,18 +83,37 @@ const GmailAccountForm = ({ item, handleClose, handleSave }) => {
           placeholder="Please enter subject"
         />
       </div>
+      <div className="d-flex gap-2 align-items-start flex-row mb-2">
+        <label htmlFor="spintaxes" className="form-label w-50 fw-bold ">
+          Spintax
+        </label>
+        <select
+          type="text"
+          className="form-control"
+          id="spintaxes"
+          name="Spintax"
+          value={input?.Spintax}
+          onChange={onChange}
+          placeholder="Please enter spintaxes"
+        >
+          <option key={0} value="">Default Spintax</option>
+          {spintaxes?.map((spintax) => (
+            <option key={spintax?._id}>{spintax?.Name}</option>
+          ))}
+        </select>
+      </div>
       <div>
-        <Richtext
-          name="Body"
-          value={richText}
-          onChange={setRichText}
-          sunRef={sunRef}
-        />
+        <Richtext name="Body" value={input} onChange={onChange} />
       </div>
 
       <div className="d-flex gap-2 align-items-center flex-row-reverse mb-2">
-        <button className="btn btn-success" onClick={() => handleSave(input)}>
-          Save
+        <button
+          className="btn btn-success"
+          onClick={
+            item?._id ? () => handleUpdate(input) : () => handleSave(input)
+          }
+        >
+          {item?._id ? 'Update' : 'Save'}
         </button>
         <button className="btn btn-danger" onClick={handleClose}>
           Close
