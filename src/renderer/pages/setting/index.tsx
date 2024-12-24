@@ -1,13 +1,19 @@
 import { useEffect, useState } from 'react';
 import useInput from '../../hooks/input';
 import useFetch from '../../hooks/useFetch';
+import { settingsServices } from '../../services/settingsService';
+import { toast } from 'react-toastify';
 // import electron from 'electron';
 // const ipc = electron.ipcRenderer;
 
 const Setting = () => {
   // const settings = useFetch({})
+  const { response, loading, error } = useFetch({
+    callback: settingsServices.getSettingsOfLoginUser,
+  });
+  const settings = response?.data;
   const [systemInfo, setSystemInfo] = useState({});
-  const defaultInput = { max_browser_automation: '' };
+  const defaultInput = { max_browser_automation: '', gologin_api_token: '' };
   const rules = {
     max_browser_automation: (value: number) =>
       +value > systemInfo?.cpuCount
@@ -18,9 +24,10 @@ const Setting = () => {
     defaultInput,
     rules,
   });
+
   const disabledSave =
     !input?.max_browser_automation ||
-    !input?.gologin_token ||
+    !input?.gologin_api_token ||
     errors?.max_browser_automation;
 
   useEffect(() => {
@@ -30,23 +37,37 @@ const Setting = () => {
     }
     getSystemInfomation();
   }, [input]);
-
+  console.log(settings, 'settings');
   useEffect(() => {
-    console.log(systemInfo);
-  }, [systemInfo]);
+    setInput(settings);
+  }, [settings?._id]);
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    try {
+      await settingsServices.add(input);
+      toast('Setting Saved', { type: 'success' });
+    } catch (error) {
+      toast('Setting Failed', { type: 'error' });
+    }
+
     // generateWindows(input?.max_browser_automation);
-    debugger;
-    window.electron.ipcRenderer.sendMessage('create-window', [input]);
+    // debugger;
+    // window.electron.ipcRenderer.sendMessage('create-window', [input]);
     // ipc.on('create-child-window', function (event, arg) {
     //   console.log(arg);
     // });
   };
 
-  const handleClear = () => {
-    setInput(defaultInput);
-    setErrors({});
+  const handleClear = async () => {
+    try {
+      await settingsServices.delete(input?._id);
+      setInput(defaultInput);
+      setErrors({});
+
+      toast('Settings Deleted', { type: 'success' });
+    } catch (error) {
+      toast('Settings Delete Failed', { type: 'success' });
+    }
   };
   return (
     <div className="text-white w-50">
@@ -85,11 +106,11 @@ const Setting = () => {
             type="text"
             className="form-control ms-3"
             placeholder="TOKEN HERE"
-            name="gologin_token"
-            value={input?.gologin_token}
+            name="gologin_api_token"
+            value={input?.gologin_api_token}
             onChange={(e) => onChange(e)}
-            aria-label="gologin_token"
-            aria-describedby="gologin_token"
+            aria-label="gologin_api_token"
+            aria-describedby="gologin_api_token"
           />
         </div>
       </div>

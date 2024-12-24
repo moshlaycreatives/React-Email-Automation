@@ -1,34 +1,24 @@
 import { axiosJson } from '../utils/http';
 
-const endpoint = '/settings';
-const accountServices = {
+const localEndpoint = 'http://localhost:3000/settings';
+// const endpoint = '/settings';
+const settingsServices = {
   add: async (item) => {
-    const response = await axiosJson.post(endpoint, item);
+    const response = await axiosJson.post(localEndpoint, item);
     return response;
   },
-  import: async (items) => {
-    const response = await axiosJson.post(endpoint, items);
-    return response;
-  },
-  getAll: async () => {
-    const response = await axiosJson.get(endpoint);
-    return response;
-  },
-  getAllEnabled:async (ids)=>{
-    return axiosJson.post(`${endpoint}/enabled`,ids)
-  },
-  getById: async (id: string) => {
-    const response = await axiosJson.get(`${endpoint}/${id}`);
+  getSettingsOfLoginUser: async () => {
+    const response = await axiosJson.get(localEndpoint);
     return response;
   },
   update: async (id: string, item) => {
-    const response = await axiosJson.patch(`${endpoint}/${id}`, item);
+    const response = await axiosJson.patch(`${localEndpoint}/${id}`, item);
     return response;
   },
   delete: async (id: string) => {
-    const response = await axiosJson.delete(`${endpoint}/${id}`);
+    const response = await axiosJson.delete(`${localEndpoint}/${id}`);
     return response;
   },
 };
 
-export { accountServices };
+export { settingsServices };

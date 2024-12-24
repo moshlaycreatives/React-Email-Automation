@@ -1,9 +1,17 @@
 import { axiosJson } from '../utils/http';
 
-const local = 'http://localhost:3000/users/';
-const accountServices = {
+const local = 'http://localhost:3000/users';
+const userServices = {
   signup: async (item) => {
     const response = await axiosJson.post(`${local}/signup`, item);
+    return response;
+  },
+  getAll: async () => {
+    const response = await axiosJson.get(local);
+    return response;
+  },
+  getUser: async () => {
+    const response = await axiosJson.get(`${local}/user`);
     return response;
   },
   login: async (item) => {
@@ -19,4 +27,4 @@ const accountServices = {
   },
 };
 
-export { accountServices };
+export { userServices };

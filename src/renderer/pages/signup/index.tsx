@@ -3,7 +3,7 @@ import { axiosJson } from '../../utils/http';
 import logo from '../../asserts/gmailer-Logo.png';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { accountServices } from '../../services/userService';
+import { userServices } from '../../services/userService';
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ const Signup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await accountServices.signup(formData);
+      const response = await userServices.signup(formData);
       setMessage(response.data.message);
       setFormData({ username: '', email: '', password: '' });
       navigate('/login', { state: response?.data });

@@ -9,7 +9,7 @@ const Tabs = ({ items }: { items: Tab[] }) => {
       {items.map((item: Tab) => (
         <Link
           onClick={() => setSelectedItem(item.id)}
-          className={`btn btn-sm btn-secondary me-5 fw-bold ${selectedItem === item.id ? "text-light" : "text-dark"}`}
+          className={`btn btn-sm btn-secondary me-5 fw-bold ${selectedItem === item.id ? 'text-light' : 'text-dark'}`}
           style={{
             border: '2px',
             borderRadius: '25px',
@@ -19,6 +19,7 @@ const Tabs = ({ items }: { items: Tab[] }) => {
             background:
               selectedItem === item.id ? 'rgb(250, 175, 67)' : '#FFFFFF',
             padding: '8px 20px',
+            marginBottom: 10,
           }}
           key={item.id}
           to={item.path}

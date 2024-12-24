@@ -1,7 +1,8 @@
 import React, { FC, useEffect, useState } from 'react';
 import logo from '../../asserts/gmailer-Logo.png';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { accountServices } from '../../services/userService';
+import { userServices } from '../../services/userService';
+import { toast } from 'react-toastify';
 
 const Login: FC = () => {
   const navigate = useNavigate();
@@ -11,19 +12,21 @@ const Login: FC = () => {
   const data = location?.state?.data;
 
   useEffect(() => {
-    setEmail(data?.data);
-  }, [data?.email, data?.username]);
+    setEmail(data?.email);
+  }, [data?.email]);
 
   console.log(location);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    // TODO: Handle form submission, e.g., send data to backend
-    await accountServices.login({ email, password });
-
-    navigate('/');
-    console.log('Email:', email);
-    console.log('Password:', password);
+    try {
+      event.preventDefault();
+      // TODO: Handle form submission, e.g., send data to backend
+      await userServices.login({ email, password });
+      debugger;
+      navigate('/settings');
+    } catch (error) {
+      toast('Login Failed', { type: 'error' });
+    }
   };
 
   return (

@@ -23,6 +23,10 @@ import calenderIcon from './asserts/calender.png';
 import licenseIcon from './asserts/license.png';
 import messageIcon from './asserts/message.png';
 import Protected from './pages/protected';
+import User from './pages/dashboard/pages/user';
+import useFetch from './hooks/useFetch';
+import { userServices } from './services/userService';
+import Analytics from './pages/dashboard/pages/analytics';
 // import { Counter } from './pages/counter/counter';
 
 export const tabs = [
@@ -50,6 +54,11 @@ const Icon = (props: any) => {
   return <img src={icon} alt="logo" />;
 };
 export function Home() {
+  const { response, loading, error } = useFetch({
+    callback: userServices.getUser,
+  });
+  const user = response?.data?.data;
+  console.log(user);
   return (
     <div
       style={{
@@ -93,7 +102,7 @@ export function Home() {
                   >
                     Name: {'  '}
                   </span>
-                  Adam
+                  {user?.user}
                 </div>
                 <div className="d-flex align-items-center gap-1">
                   <Icon icon={messageIcon} />
@@ -104,7 +113,7 @@ export function Home() {
                   >
                     Email: {'  '}
                   </span>{' '}
-                  hellow@gmail.com
+                  {user?.email}
                 </div>
                 <div className="d-flex align-items-center gap-1">
                   <Icon icon={licenseIcon} />
@@ -204,11 +213,16 @@ export default function App() {
           }
         >
           <Route index element={<Setting />} />
-          <Route path="settings" element={<Setting />} />
+          <Route path="/settings" element={<Setting />} />
           <Route path="/spintax" element={<Spintax />} />
           <Route path="/gmail-accounts" element={<GmailAccounts />} />
           <Route path="/email-lists" element={<EmailLists />} />
           <Route path="/campaign" element={<Campaign />} />
+        </Route>
+        <Route path="/dashboard" element={<Dashboard />}>
+          <Route index element={<User />} />
+          <Route path="users" element={<User />} />
+          <Route path="analytics" element={<Analytics />} />
         </Route>
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />

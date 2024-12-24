@@ -1,3 +1,7 @@
+body {
+  overflow:hidden;
+}
+
 .tabs {
   background-color: rgb(238, 238, 238);
   padding-top: 1rem;
