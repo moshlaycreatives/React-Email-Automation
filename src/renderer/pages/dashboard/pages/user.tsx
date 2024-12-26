@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import Error from '../../../components/error';
 import Loading from '../../../components/loading';
 import Table from '../../../components/tables';
@@ -5,6 +6,7 @@ import useFetch from '../../../hooks/useFetch';
 import { userServices } from '../../../services/userService';
 
 const User = () => {
+  const navigate = useNavigate();
   const { response, loading, error } = useFetch({
     callback: userServices.getAll,
   });
@@ -15,10 +17,18 @@ const User = () => {
   if (loading) return <Loading />;
   return (
     <div>
-      <h3 className="mb-4" style={{ color: '' }}>
-        User Management
-      </h3>
-      <div className='d-flex justify-content-end gap-2 mb-3'>
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <h3 style={{ color: '' }}>
+          User Management
+        </h3>
+        <button
+          onClick={() => navigate('/')}
+          className="btn btn-sm btn-primary"
+        >
+          Back
+        </button>
+      </div>
+      <div className="d-flex justify-content-end gap-2 mb-3">
         <button className="btn btn-sm btn-primary">Add</button>
         <button className="btn btn-sm btn-primary">Update</button>
         <button className="btn btn-sm btn-danger">Delete</button>

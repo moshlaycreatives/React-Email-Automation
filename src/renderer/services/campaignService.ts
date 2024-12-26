@@ -12,7 +12,7 @@ const campaingeService = {
     return response;
   },
   start: async (id) => {
-    const response = await axiosJson.get(`${endpoint}/${id}`);
+    const response = await axiosJson.get(`${endpoint}/start/${id}`);
     return response;
   },
   getById: async (id: string) => {

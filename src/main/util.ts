@@ -11,3 +11,13 @@ export function resolveHtmlPath(htmlFileName: string) {
   }
   return `file://${path.resolve(__dirname, '../renderer/', htmlFileName)}`;
 }
+
+export function resolveServerPath(serverFileName: string) {
+  if (process.env.NODE_ENV === 'development') {
+    const port = process.env.PORT || 8880;
+    const url = new URL(`http://localhost:${port}`);
+    url.pathname = serverFileName;
+    return url.href;
+  }
+  return `file://${path.resolve(__dirname, '../server/', serverFileName)}`;
+}

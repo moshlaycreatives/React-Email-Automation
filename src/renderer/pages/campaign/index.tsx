@@ -62,6 +62,7 @@ const Campaign = () => {
       toast('Campaign Created', { type: 'success' });
     } catch (error) {
       console.log(error);
+      toast('Campaign Failed', { type: 'error' });
     } finally {
       setInput({});
       handleClose();
@@ -75,6 +76,7 @@ const Campaign = () => {
       setRefetch(true);
     } catch (error) {
       console.log(error);
+      toast('Campaign Failed', { type: 'error' });
     } finally {
       setInput({});
       handleClose();
@@ -82,37 +84,23 @@ const Campaign = () => {
   };
 
   const deleteCampaign = async () => {
-    await campaingeService.delete(selectedId);
-    toast('Campaign Deleted', { type: 'success' });
-    setRefetch(true);
+    try {
+      await campaingeService.delete(selectedId);
+      toast('Campaign Deleted', { type: 'success' });
+      setRefetch(true);
+
+      toast('Campaign Deleted', { type: 'success' });
+    } catch (error) {
+      toast('Delete Failed', { type: 'error' });
+    }
   };
 
   const startCampaign = async () => {
-    // let recursion = 0;
-    // if (firstTime) {
-    //   value = 0;
-    // } else {
-    //   value = 10;
-    //   // recursion = selectedAccounts.total / value;
-    // }
-    // if (!selectedId) return;
-    // const getSelectedCampaign = await campaingeService.getById(selectedId);
-    // console.log(getSelectedCampaign);
-    // const selectedEmailList = getSelectedCampaign?.data?.data?.CampaignEmailIds;
-    // const selectedAccounts = getSelectedCampaign?.data?.data?.CampaignAccounts;
-    // console.log(selectedAccounts);
-    // console.log(selectedEmailList);
-    // const accounts = await accountServices.
-    // ({
-    //   ids: selectedAccounts,
-    // });
-    // const emails = await emailListServices.notSended({
-    //   ids: selectedEmailList,
-    // });
-    // console.log(accounts);
-    // console.log(emails);
-    // const enabledAccounts = accountServices.getAllEnabled(value,ids);
-    // const notSendedEmails = emailListServices.notSended(value,ids)
+    try {
+      await campaingeService.start(selectedId);
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   if (error) return <Error />;
@@ -163,6 +151,7 @@ const Campaign = () => {
             className="btn btn-success"
             onClick={() => handleOpen('modify')}
             key={open}
+            disabled={!selectedId}
           >
             Modify
           </button>
@@ -170,6 +159,7 @@ const Campaign = () => {
             style={{ width: '33%' }}
             className="btn btn-danger"
             onClick={deleteCampaign}
+            disabled={!selectedId}
           >
             Delete
           </button>
@@ -177,15 +167,24 @@ const Campaign = () => {
             style={{ width: '33%' }}
             className="btn btn-primary overflow-hidden position-relative"
             onClick={startCampaign}
+            disabled={!selectedId}
           >
             <label htmlFor="start"></label>
             start
             {/* <input type="file" id="start" style={{width:"33%"}} className='position-absolute'/> */}
           </button>
-          <button style={{ width: '33%' }} className="btn btn-primary">
+          <button
+            disabled={!selectedId}
+            style={{ width: '33%' }}
+            className="btn btn-primary"
+          >
             pause
           </button>
-          <button style={{ width: '33%' }} className="btn btn-primary">
+          <button
+            disabled={!selectedId}
+            style={{ width: '33%' }}
+            className="btn btn-primary"
+          >
             stop
           </button>
         </div>

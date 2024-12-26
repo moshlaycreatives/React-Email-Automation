@@ -4,6 +4,9 @@ import useInput from '../../hooks/input';
 import useFetch from '../../hooks/useFetch';
 import { emailListServices } from '../../services/emaillistService';
 import { csvToJson, isArray } from '../../utils/utils';
+import { toast } from 'react-toastify';
+import Loading from '../../components/loading';
+import Error from '../../components/error';
 
 const GmailAccountForm = ({ item, handleClose, handleSave, handleUpdate }) => {
   const { input, setInput, onChange } = useInput({});
@@ -26,39 +29,57 @@ const GmailAccountForm = ({ item, handleClose, handleSave, handleUpdate }) => {
   }, [item?._id]);
 
   const openFileModal = () => {
-    importRef.current.click();
+    importRef?.current?.click();
   };
 
   const importCsv = () => {
-    const file = importRef.current.files[0];
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      let result = e.target?.result;
-      let json = csvToJson(result);
-      const data =
-        Array.isArray(json) &&
-        json?.map((email) => ({
-          EmailListId: item?._id,
-          ...email,
-        }));
-      await emailListServices.importEmails(data);
-      setRefetch(true);
-      result = null;
-      json = null;
-    };
-    reader.readAsText(file);
+    try {
+      const file = importRef.current.files[0];
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        let result = e.target?.result;
+        let json = csvToJson(result);
+        const data =
+          Array.isArray(json) &&
+          json?.map((email) => ({
+            EmailListId: item?._id,
+            ...email,
+          }));
+        await emailListServices.importEmails(data);
+        toast('Imported', { type: 'success' });
+        setRefetch(true);
+        result = null;
+        json = null;
+      };
+      reader.readAsText(file);
+    } catch (error) {
+      toast('Import Failed', { type: 'error' });
+    }
     // csvToJson(file)
   };
 
   const deleteOne = async () => {
-    await emailListServices.deleteEmail(emailId);
-    setRefetch(true);
+    try {
+      toast('Saved Successfully', { type: 'success' });
+      await emailListServices.deleteEmail(emailId);
+      setRefetch(true);
+    } catch (error) {
+      toast('Delete Failed', { type: 'error' });
+    }
   };
 
   const deleteAllEmails = async () => {
-    await emailListServices.deleteAllEmail(item?._id);
-    setRefetch(true);
+    try {
+      await emailListServices.deleteAllEmail(item?._id);
+      toast('Saved Successfully', { type: 'success' });
+      setRefetch(true);
+    } catch (error) {
+      toast('Deleted Failed', { type: 'error' });
+    }
   };
+
+  if (error) return <Error />;
+  if (loading) return <Loading />;
 
   return (
     <div className="" style={{ width: '500px' }}>

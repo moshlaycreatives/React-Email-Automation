@@ -37,7 +37,7 @@ const Setting = () => {
     }
     getSystemInfomation();
   }, [input]);
-  console.log(settings, 'settings');
+  
   useEffect(() => {
     setInput(settings);
   }, [settings?._id]);
@@ -46,6 +46,21 @@ const Setting = () => {
     try {
       await settingsServices.add(input);
       toast('Setting Saved', { type: 'success' });
+    } catch (error) {
+      toast('Setting Failed', { type: 'error' });
+    }
+
+    // generateWindows(input?.max_browser_automation);
+    // debugger;
+    // window.electron.ipcRenderer.sendMessage('create-window', [input]);
+    // ipc.on('create-child-window', function (event, arg) {
+    //   console.log(arg);
+    // });
+  };
+  const handleUpdate = async () => {
+    try {
+      await settingsServices.update(settings?._id, input);
+      toast('Setting Updated', { type: 'success' });
     } catch (error) {
       toast('Setting Failed', { type: 'error' });
     }
@@ -117,13 +132,17 @@ const Setting = () => {
       <div className="pe-5 d-flex justify-content-center flex-wrap gap-2 mt-4">
         <button
           className="btn btn-success py-1 px-4 fs-5"
-          onClick={handleSave}
+          onClick={!settings?._id ? handleSave : handleUpdate}
           disabled={disabledSave}
         >
-          Save
+          {!settings?._id ? 'Save' : 'Update'}
         </button>
-        <button className="btn btn-danger py-1 px-4 fs-5" onClick={handleClear}>
-          Cancel
+        <button
+          disabled={!settings?._id}
+          className="btn btn-danger py-1 px-4 fs-5"
+          onClick={handleClear}
+        >
+          Delete
         </button>
       </div>
     </div>

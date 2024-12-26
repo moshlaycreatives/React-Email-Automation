@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { spintaxServices } from '../../services/spintaxService';
 import { isArray } from '../../utils/utils';
 import { axiosJson } from '../../utils/http';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import useFetch from '../../hooks/useFetch';
 
 const defaultValues = {
@@ -35,7 +35,6 @@ const AddNewSpintax = () => {
   const disableSave = !inputValidation || errorsExist;
   const [val, setVal] = useState('');
   const [selectedVal, setSelectedVal] = useState('');
-  console.log(spintaxById.error);
 
   const saveSpintax = async (item: SpintaxItem) => {
     try {
@@ -54,7 +53,6 @@ const AddNewSpintax = () => {
   };
 
   useEffect(() => {
-    debugger;
     if (!spintaxById.loading) {
       console.log(spintaxById.response);
       console.log(spintaxById.error);
@@ -71,20 +69,25 @@ const AddNewSpintax = () => {
       setInput(response?.data?.data);
       setVal('');
     } catch (error) {
+      toast('Save Failed', { type: 'error' });
       console.log(error);
     }
   };
 
   const deleteVal = async (val: string) => {
     try {
-      const response = await axiosJson.post(`/spintax/deleteValue/${input?._id}`, {
-        spintaxValue: val,
-      });
+      const response = await axiosJson.post(
+        `/spintax/deleteValue/${input?._id}`,
+        {
+          spintaxValue: val,
+        },
+      );
       setInput(response?.data?.data);
       setVal('');
       toast('Value Deleted', { type: 'success' });
     } catch (error) {
       console.log(error);
+      toast('Value Deleted Failed', { type: 'error' });
     } finally {
     }
   };
@@ -100,7 +103,12 @@ const AddNewSpintax = () => {
     >
       <div className="container">
         <div className="ms-5 me-4">
-          <h1 className="pt-4 pb-2">Spintax</h1>
+          <div className="d-flex justify-content-between align-items-center">
+            <h1 className="pt-4 pb-2">Spintax</h1>
+            <Link className="btn btn-primary w-25" to="/spintax">
+              Back
+            </Link>
+          </div>
           <div className="mb-3 row">
             <label htmlFor="Name" className="form-label col-2 fw-bold">
               Name

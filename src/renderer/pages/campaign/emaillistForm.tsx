@@ -38,6 +38,9 @@ const EmailListForm = ({ item, handleClose }) => {
   const deSelectAll = () => {
     handleAccountIds([]);
   };
+
+  if (error) return <Error />;
+  if (loading) return <Loading />;
   console.log(items);
   return (
     <div style={{ width: 300, height: 300, overflow: 'auto' }} className="">

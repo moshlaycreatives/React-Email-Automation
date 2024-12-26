@@ -27,6 +27,8 @@ import User from './pages/dashboard/pages/user';
 import useFetch from './hooks/useFetch';
 import { userServices } from './services/userService';
 import Analytics from './pages/dashboard/pages/analytics';
+import Loading from './components/loading';
+import Error from './components/error';
 // import { Counter } from './pages/counter/counter';
 
 export const tabs = [
@@ -49,16 +51,21 @@ export const tabs = [
   // { id: 7, name: 'Signup', path: '/signup', component: Signup },
   { id: 8, name: 'Dashboard', path: '/dashboard', component: Dashboard },
 ];
+
 const Icon = (props: any) => {
   const { icon } = props;
   return <img src={icon} alt="logo" />;
 };
+
 export function Home() {
   const { response, loading, error } = useFetch({
     callback: userServices.getUser,
   });
   const user = response?.data?.data;
-  console.log(user);
+
+  if (error) return <Error />;
+  if (loading) return <Loading />;
+
   return (
     <div
       style={{
@@ -93,7 +100,7 @@ export function Home() {
                   borderColor: 'rgb(250, 175, 67)',
                 }}
               >
-                <div className="d-flex align-items-center gap-1">
+                <div className="d-flex align-items-center gap-1 flex-wrap">
                   <Icon icon={userIcon} />
                   <span
                     style={{
@@ -104,7 +111,7 @@ export function Home() {
                   </span>
                   {user?.user}
                 </div>
-                <div className="d-flex align-items-center gap-1">
+                <div className="d-flex align-items-center gap-1 flex-wrap">
                   <Icon icon={messageIcon} />
                   <span
                     style={{
@@ -115,7 +122,7 @@ export function Home() {
                   </span>{' '}
                   {user?.email}
                 </div>
-                <div className="d-flex align-items-center gap-1">
+                <div className="d-flex align-items-center gap-1 flex-wrap">
                   <Icon icon={licenseIcon} />
                   <span
                     style={{
@@ -126,7 +133,7 @@ export function Home() {
                   </span>
                   Ultimate
                 </div>
-                <div className="d-flex align-items-center gap-1">
+                <div className="d-flex align-items-center gap-1 flex-wrap">
                   <Icon icon={calenderIcon} />
                   <span
                     style={{

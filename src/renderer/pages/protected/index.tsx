@@ -1,18 +1,17 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const Protected = ({ children }) => {
-  const token = localStorage.getItem('auth-token');
+const Protected = ({ children }: { children: any }) => {
   const navigate = useNavigate();
-  debugger;
+  const token = localStorage.getItem('auth-token');
+
+  useEffect(() => {
+    if (!token) navigate('/login');
+  }, [token]);
+
   if (token) {
     return children;
   }
-
-  useEffect(() => {
-    // Redirect to login if no token
-    navigate('/login');
-  }, []);
 
   return null;
 };

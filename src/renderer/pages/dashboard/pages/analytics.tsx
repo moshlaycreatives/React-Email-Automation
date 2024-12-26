@@ -1,9 +1,20 @@
+import { useNavigate } from 'react-router-dom';
 import { LineChart } from 'recharts';
 
 const Analytics = () => {
+  const navigate = useNavigate();
+
   return (
     <div>
-      <h3>Analytics</h3>
+      <div className="d-flex align-items-center justify-content-between">
+        <h3>Analytics</h3>
+        <button
+          onClick={() => navigate('/')}
+          className="btn btn-sm btn-primary"
+        >
+          Back
+        </button>
+      </div>
       <div className="row">
         <div className="col-sm-6">
           <LineChart />

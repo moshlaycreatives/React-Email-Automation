@@ -100,12 +100,14 @@ const EmailLists = () => {
         <button
           className="flex-grow-1 flex-shrink-1 btn btn-success"
           onClick={() => setOpen('modify')}
+          disabled={!selectedId}
         >
           Modify
         </button>
         <button
           className="flex-grow-1 flex-shrink-1 btn btn-danger"
           onClick={handleDelete}
+          disabled={!selectedId}
         >
           Delete
         </button>

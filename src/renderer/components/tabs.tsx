@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Tab } from '../interfaces/tabs';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 const Tabs = ({ items }: { items: Tab[] }) => {
-  const [selectedItem, setSelectedItem] = useState(1);
+  const location = useLocation();
+  const item = items.find(item=>item.path === location.pathname)
+  const [selectedItem, setSelectedItem] = useState(item?.id || 1);
   return (
     <div className="pt-4 mb-5">
       {items.map((item: Tab) => (

@@ -26,6 +26,7 @@ const Spintax = () => {
       }
     } catch (error) {
       console.log(error);
+      toast('Spintax Deleted Failed', { type: 'error' });
     }
   };
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -46,15 +47,17 @@ const Spintax = () => {
         </button>
         <button
           className="w-25 btn btn-success"
+          disabled={!selectedId}
           onClick={() => navigate(`/spintax-addnew/${selectedId}`)}
         >
           Modify
         </button>
         <button
           className="w-25 btn btn-danger"
+          disabled={!selectedId}
           onClick={() => deleteSpintax(selectedId)}
         >
-          Cancel
+          Delete
         </button>
       </div>
       <div className="mt-5">

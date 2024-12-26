@@ -22,8 +22,8 @@ const Login: FC = () => {
       event.preventDefault();
       // TODO: Handle form submission, e.g., send data to backend
       await userServices.login({ email, password });
-      debugger;
       navigate('/settings');
+      toast('Login Successfully', { type: 'success' });
     } catch (error) {
       toast('Login Failed', { type: 'error' });
     }

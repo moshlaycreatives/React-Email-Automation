@@ -46,7 +46,7 @@ const GmailAccounts = () => {
     : {};
 
   const transformBool = (val) => {
-    return val === true ? 1 : 0;
+    return val ? 1 : 0;
   };
 
   const handleSave = async (item) => {
@@ -104,17 +104,22 @@ const GmailAccounts = () => {
   };
 
   const importCsv = () => {
-    const file = importRef.current.files[0];
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      let result = e.target?.result;
-      let json = csvToJson(result);
-      await accountServices.import({ docs: json });
-      setRefetch(true);
-      result = null;
-      json = null;
-    };
-    reader.readAsText(file);
+    try {
+      const file = importRef.current.files[0];
+      const reader = new FileReader();
+      reader.onload = async (e) => {
+        let result = e.target?.result;
+        let json = csvToJson(result);
+        await accountServices.import({ docs: json });
+        toast('Imported', { type: 'success' });
+        setRefetch(true);
+        result = null;
+        json = null;
+      };
+      reader.readAsText(file);
+    } catch (error) {
+      toast('Import Failed', { type: 'error' });
+    }
     // csvToJson(file)
   };
 
@@ -169,6 +174,7 @@ const GmailAccounts = () => {
           className="btn btn-success"
           onClick={() => handleOpen('modify')}
           target={'modify'}
+          disabled={!selectedId}
           // target={open}
           key={open}
         >
@@ -180,11 +186,20 @@ const GmailAccounts = () => {
           onClick={handleDelete}
           loading={deleteLoading}
           label="Delete"
+          disabled={!selectedId}
         />
-        <button style={{ width: '32%' }} className="btn btn-primary">
+        <button
+          disabled={!selectedId}
+          style={{ width: '32%' }}
+          className="btn btn-primary"
+        >
           Open Account
         </button>
-        <button style={{ width: '32%' }} className="btn btn-primary">
+        <button
+          disabled={!selectedId}
+          style={{ width: '32%' }}
+          className="btn btn-primary"
+        >
           Connect Account
         </button>
       </div>
