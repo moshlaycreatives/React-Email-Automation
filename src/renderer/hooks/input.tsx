@@ -1,21 +1,36 @@
-import React, { ChangeEvent } from 'react';
+import React, { ChangeEvent, useEffect } from 'react';
 
 type DynamicObject = {
   [key: string]: any; // Keys are strings, and values are also any
 };
 
-const useInput = (defaultValue: DynamicObject) => {
-  const [input, setInput] = React.useState(defaultValue);
-  const onChange = (e: ChangeEvent<HTMLInputElement>, val: any = null) => {
+const useInput = ({ defaultValue = {}, rules = {} }: DynamicObject) => {
+  const [input, setInput] = React.useState({});
+  const [errors, setErrors] = React.useState<DynamicObject>({});
+
+  const onChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    val: any = null,
+    specialCase: any,
+  ) => {
+    const _errors = {};
     let name = e.target.name;
     let value = e.target.value;
-    if (val) {
+    if (val || specialCase === 'zero') {
       value = val;
     }
-    console.log(input)
-    setInput({ ...input, [name]: value });
+    if (rules[name]) {
+      var error = rules[name](value);
+    }
+    if (rules[name] && error) {
+      const _errors = { ...errors, [name]: error };
+      setErrors(_errors);
+    } else {
+      setInput({ ...input, [name]: value });
+      setErrors(_errors);
+    }
   };
-  return { input, setInput, onChange };
+  return { input, setInput, onChange, errors, setErrors };
 };
 
 export default useInput;

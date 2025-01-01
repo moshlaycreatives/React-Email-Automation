@@ -1,15 +1,32 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import logo from '../../asserts/gmailer-Logo.png';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { userServices } from '../../services/userService';
+import { toast } from 'react-toastify';
 
 const Login: FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+  const [Email, setEmail] = useState('');
+  const [Password, setPassword] = useState('');
+  const location = useLocation();
+  const data = location?.state?.data;
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    // TODO: Handle form submission, e.g., send data to backend
-    console.log('Email:', email);
-    console.log('Password:', password);
+  useEffect(() => {
+    setEmail(data?.Email);
+  }, [data?.Email]);
+
+  console.log(location);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    try {
+      event.preventDefault();
+      // TODO: Handle form submission, e.g., send data to backend
+      await userServices.login({ Email, Password });
+      navigate('/settings');
+      toast('Login Successfully', { type: 'success' });
+    } catch (error) {
+      toast('Login Failed', { type: 'error' });
+    }
   };
 
   return (
@@ -43,27 +60,27 @@ const Login: FC = () => {
               <div className="card-body p-0">
                 <form onSubmit={handleSubmit}>
                   <div className="mb-3">
-                    <label htmlFor="email" className="form-label text-white">
+                    <label htmlFor="Email" className="form-label text-white">
                       Email
                     </label>
                     <input
-                      type="email"
+                      type="Email"
                       className="form-control"
-                      id="email"
-                      value={email}
+                      id="Email"
+                      value={Email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
                     />
                   </div>
                   <div className="mb-3">
-                    <label htmlFor="password" className="form-label text-white">
+                    <label htmlFor="Password" className="form-label text-white">
                       Password
                     </label>
                     <input
-                      type="password"
+                      type="Password"
                       className="form-control"
-                      id="password"
-                      value={password}
+                      id="Password"
+                      value={Password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
                     />
@@ -73,25 +90,28 @@ const Login: FC = () => {
                       Forgot Password?
                     </a>
                   </div>
+                  <button
+                    type="submit"
+                    className="btn w-100"
+                    style={{
+                      backgroundColor: '#FAAF43',
+                      color: 'white',
+                      borderRadius: '15px',
+                    }}
+                  >
+                    Sign In
+                  </button>
                 </form>
-                <button
-                  type="submit"
-                  className="btn w-100"
-                  style={{
-                    backgroundColor: '#FAAF43',
-                    color: 'white',
-                    borderRadius: '15px',
-                  }}
-                >
-                  Sign In
-                </button>
                 <div className="w-100 d-flex justify-content-between mt-3">
                   <p className="text-center text-white">
                     Don't have an account yet?
                   </p>
-                  <a href="#" className="text-decoration-none text-white">
+                  <Link
+                    to="/signup"
+                    className="text-decoration-none text-white"
+                  >
                     Register Now
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>

@@ -15,6 +15,19 @@ import Campaign from './pages/campaign';
 import Login from './pages/login';
 import logo from './asserts/gmailer-Logo.png';
 import AddNewSpintax from './pages/Spintax/add-new';
+import { ToastContainer } from 'react-toastify';
+import Signup from './pages/signup';
+import Dashboard from './pages/dashboard';
+import userIcon from './asserts/user.png';
+import calenderIcon from './asserts/calender.png';
+import licenseIcon from './asserts/license.png';
+import messageIcon from './asserts/message.png';
+import Protected from './pages/protected';
+import User from './pages/dashboard/pages/user';
+import useFetch from './hooks/useFetch';
+import { userServices } from './services/userService';
+import Analytics from './pages/dashboard/pages/analytics';
+import { useEffect, useRef, useState } from 'react';
 
 export const tabs = [
   { id: 1, name: 'Settings', path: '/settings', component: Setting },
@@ -32,25 +45,61 @@ export const tabs = [
     component: EmailLists,
   },
   { id: 5, name: 'Campaign', path: '/campaign', component: Campaign },
-  // { id: 6, name: 'Login', path: '/login', component: Login },
+  { id: 6, name: 'Dashboard', path: '/dashboard', component: Dashboard },
 ];
+
+const Icon = (props: any) => {
+  const { icon } = props;
+  return <img src={icon} alt="logo" />;
+};
+
 export function Home() {
+  const { response, loading, error } = useFetch({
+    callback: userServices.getUser,
+  });
+  const user = response?.data?.data;
+
+  const elementRef = useRef(null);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+
+  const updateDimensions = () => {
+    if (elementRef.current) {
+      const { offsetWidth, offsetHeight } = elementRef.current;
+      setDimensions({ width: offsetWidth, height: offsetHeight });
+    }
+  };
+
+  useEffect(() => {
+    // Initial dimension calculation
+    updateDimensions();
+
+    // Add window resize listener
+    window.addEventListener('resize', updateDimensions);
+
+    // Cleanup listener on component unmount
+    return () => {
+      window.removeEventListener('resize', updateDimensions);
+    };
+  }, []);
+
   return (
     <div
+      ref={elementRef}
       style={{
-        height: '100vh',
+        height: dimensions.width > 500 ? '100vh' : '100%',
         background:
           'linear-gradient(180deg, #250E42 0%, #3C1B64 25%, #532886 50%)',
       }}
     >
+      {/* <Counter /> */}
       <div className="container">
         <div className="row">
-          <div className="col-sm-4 my-5">
+          <div className="col-12 col-sm-4 my-5">
             <img
-              width="80%"
+              width="60%"
               src={logo}
               alt="Gmailer Logo"
-              className="img-fluid mx-auto d-block mb-2"
+              className="img-fluid ms-5 d-block mb-2"
               style={{ height: 100 }}
             />
             <div
@@ -68,7 +117,8 @@ export function Home() {
                   borderColor: 'rgb(250, 175, 67)',
                 }}
               >
-                <div>
+                <div className="d-flex align-items-center gap-1 flex-wrap">
+                  <Icon icon={userIcon} />
                   <span
                     style={{
                       color: 'rgba(60, 27, 100,0.8)',
@@ -76,9 +126,10 @@ export function Home() {
                   >
                     Name: {'  '}
                   </span>
-                  Adam
+                  {user?.UserName}
                 </div>
-                <div>
+                <div className="d-flex align-items-center gap-1 flex-wrap">
+                  <Icon icon={messageIcon} />
                   <span
                     style={{
                       color: 'rgba(60, 27, 100,0.8)',
@@ -86,9 +137,10 @@ export function Home() {
                   >
                     Email: {'  '}
                   </span>{' '}
-                  hellow@gmail.com
+                  {user?.Email}
                 </div>
-                <div>
+                <div className="d-flex align-items-center gap-1 flex-wrap">
+                  <Icon icon={licenseIcon} />
                   <span
                     style={{
                       color: 'rgba(60, 27, 100,0.8)',
@@ -98,7 +150,8 @@ export function Home() {
                   </span>
                   Ultimate
                 </div>
-                <div>
+                <div className="d-flex align-items-center gap-1 flex-wrap">
+                  <Icon icon={calenderIcon} />
                   <span
                     style={{
                       color: 'rgba(60, 27, 100,0.8)',
@@ -115,7 +168,7 @@ export function Home() {
                 style={{
                   border: '0px',
                   borderRadius: '15px',
-                  marginTop: '300px',
+                  marginTop: '20px',
                   marginLeft: '55px',
                 }}
                 className="bg-danger px-4 py-3 text-white fw-bold fs-4"
@@ -124,7 +177,7 @@ export function Home() {
               </button>
             </div>
           </div>
-          <div className="col-sm-8">
+          <div className="col-12 col-sm-8">
             <div className="row justify-content-end">
               <div
                 className="bg-white col-sm-5 mt-5 p-4 fw-bold"
@@ -157,7 +210,8 @@ export function Home() {
                 </div>
               </div>
             </div>
-            <Tabs items={tabs} />
+
+            <Tabs items={tabs} role={user?.Role} />
             <Outlet />
           </div>
         </div>
@@ -174,15 +228,31 @@ export default function App() {
           <Route key={tab.id} path={tab.path} element={tab.component} />
         ))} */}
         <Route path="/spintax-addnew" element={<AddNewSpintax />} />
-        <Route path="/" element={<Home />}>
+        <Route path="/spintax-addnew/:id" element={<AddNewSpintax />} />
+        <Route
+          path="/"
+          element={
+            <Protected>
+              <Home />
+            </Protected>
+          }
+        >
+          <Route index element={<Setting />} />
           <Route path="/settings" element={<Setting />} />
           <Route path="/spintax" element={<Spintax />} />
           <Route path="/gmail-accounts" element={<GmailAccounts />} />
           <Route path="/email-lists" element={<EmailLists />} />
           <Route path="/campaign" element={<Campaign />} />
-          <Route path="/login" element={<Login />} />
         </Route>
+        <Route path="/dashboard" element={<Dashboard />}>
+          <Route index element={<User />} />
+          <Route path="users" element={<User />} />
+          <Route path="analytics" element={<Analytics />} />
+        </Route>
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
       </Routes>
+      <ToastContainer />
     </Router>
   );
 }

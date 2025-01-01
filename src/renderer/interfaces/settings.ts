@@ -1,5 +1,5 @@
 interface SettingsForm {
-  max_browser_automation: string;
+  MaxBroswersAllowed: string;
 }
 
 export { SettingsForm };

@@ -102,12 +102,20 @@
   },
   "dependencies": {
     "@electron/notarize": "^2.3.2",
+    "@iconify/react": "^5.1.0",
+    "axios": "^1.7.9",
     "electron-debug": "^3.2.0",
     "electron-log": "^4.4.8",
     "electron-updater": "^6.1.4",
+    "gologin": "^2.1.6",
+    "quill": "^2.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.16.0"
+    "react-modal": "^3.16.1",
+    "react-quill": "^2.0.0",
+    "react-router-dom": "^6.16.0",
+    "react-toastify": "^11.0.2",
+    "sqlite3": "^5.1.7"
   },
   "devDependencies": {
     "@electron/rebuild": "^3.3.0",
@@ -158,8 +166,8 @@
     "react-refresh": "^0.14.0",
     "react-test-renderer": "^18.2.0",
     "rimraf": "^5.0.1",
-    "sass": "^1.67.0",
-    "sass-loader": "^13.3.2",
+    "sass": "^1.83.0",
+    "sass-loader": "^16.0.4",
     "style-loader": "^3.3.3",
     "terser-webpack-plugin": "^5.3.9",
     "ts-jest": "^29.1.1",
@@ -243,8 +251,16 @@
     "url": "https://opencollective.com/electron-react-boilerplate-594"
   },
   "devEngines": {
-    "node": ">=14.x",
-    "npm": ">=7.x"
+    "runtime": {
+      "name": "node",
+      "version": ">=14.x",
+      "onFail": "error"
+    },
+    "packageManager": {
+      "name": "npm",
+      "version": ">=7.x",
+      "onFail": "error"
+    }
   },
   "electronmon": {
     "patterns": [
