@@ -12,12 +12,11 @@ import path from 'path';
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
-import MenuBuilder from './menu';
-import { resolveHtmlPath } from './util';
 import os from 'node:os';
 import { setTimeout } from 'node:timers/promises';
-import { GologinApi } from 'gologin';
-import { toast } from 'react-toastify';
+import MenuBuilder from './menu';
+import { resolveHtmlPath } from './util';
+
 // import { fork } from 'child_process'; // To spawn the server as a child process
 
 // const serverPath = app.isPackaged
@@ -154,7 +153,7 @@ ipcMain.handle(
         waitUntil: 'networkidle2',
         timeout: 30000,
       });
-     
+
       // return { browser, page };
     } catch (error) {
       console.log('Login may require manual intervention.');
